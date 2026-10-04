@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -7,8 +8,10 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Montserrat:wght@300;400&display=swap"
+        rel="stylesheet">
+
     <style>
         /* ─── BRAND TOKENS & RESET ─── */
         :root {
@@ -23,13 +26,16 @@
             --font-label: 'Montserrat', 'DM Sans', sans-serif;
         }
 
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        html, body {
+        html,
+        body {
             width: 100%;
             background-color: var(--soft-black);
             color: var(--dark-brown);
@@ -93,13 +99,11 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                rgba(222, 209, 188, 0.035),
-                rgba(222, 209, 188, 0.035) 2px,
-                transparent 2px,
-                transparent 14px
-            );
+            background: repeating-linear-gradient(45deg,
+                    rgba(222, 209, 188, 0.035),
+                    rgba(222, 209, 188, 0.035) 2px,
+                    transparent 2px,
+                    transparent 14px);
             pointer-events: none;
         }
 
@@ -139,7 +143,7 @@
             line-height: 0.88;
             color: var(--warm-ivory);
             letter-spacing: -0.02em;
-            text-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            text-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
 
         .hero-line-we {
@@ -193,8 +197,17 @@
         }
 
         @keyframes pulseScroll {
-            0%, 100% { opacity: 0.3; transform: scaleY(0.7); }
-            50% { opacity: 1; transform: scaleY(1); }
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scaleY(0.7);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scaleY(1);
+            }
         }
 
         /* ─── LAYER 2: PAGE 2 LAYER (z-index: 2, clip-path iris) ─── */
@@ -323,6 +336,7 @@
             .page2-layer {
                 clip-path: circle(0px at 70% 26%);
             }
+
             .hero-bg-label {
                 bottom: 20px;
                 left: 20px;
@@ -332,18 +346,25 @@
 
         /* Reduced Motion */
         @media (prefers-reduced-motion: reduce) {
-            .hero-bg-wrap, .hero-copy, .page2-layer, .page2-heading, .photo-card, .ring-circle {
+
+            .hero-bg-wrap,
+            .hero-copy,
+            .page2-layer,
+            .page2-heading,
+            .photo-card,
+            .ring-circle {
                 transition: none !important;
             }
         }
     </style>
 </head>
+
 <body>
 
     <!-- ─── SCROLL TRACK & PINNED STAGE ─── -->
     <div class="scroll-track" id="scrollTrack">
         <div class="stage" id="stage">
-            
+
             <!-- ─── HERO LAYER (Z-1) ─── -->
             <div class="hero-layer">
                 <div class="hero-bg-wrap" id="heroBgWrap">
@@ -352,7 +373,8 @@
                 </div>
 
                 <div class="hero-copy" id="heroCopy">
-                    <img src="/logo/logo.svg" alt="ORÉVA Logo" style="width: clamp(54px, 6vw, 90px); height: auto; margin-bottom: 24px; filter: drop-shadow(0 6px 20px rgba(154, 114, 62, 0.4)); opacity: 0.95;" />
+                    <img src="/logo/logo.svg" alt="ORÉVA Logo"
+                        style="width: clamp(54px, 6vw, 90px); height: auto; margin-bottom: 24px; filter: drop-shadow(0 6px 20px rgba(154, 114, 62, 0.4)); opacity: 0.95;" />
                     <h1 class="hero-headline">
                         <span class="hero-line-we" id="heroLineWe">We</span>
                         <span class="hero-line-transform" id="heroLineTransform">Transform</span>
@@ -386,7 +408,7 @@
 
     <!-- ─── VANILLA JS & DATA DRIVEN ANIMATION LOGIC ─── -->
     <script>
-        (function() {
+        (function () {
             // Data-driven photo array (7 small framed photos)
             const photosData = [
                 { id: 'IMG 01', title: 'TRAVERTINE', widthVw: 8.5, minPx: 72, left: '10%', depth: 0.7, tilt: -4.5, startP: 0.32, bg: 'radial-gradient(circle, #EADFCE, #B8A992)' },
@@ -476,7 +498,7 @@
                 // 2. HERO COPY (p 0 to 0.38)
                 const copyProgress = clamp(p / 0.38, 0, 1);
                 const copyFadeProgress = clamp(p / 0.34, 0, 1);
-                
+
                 const weMoveY = -22 * copyProgress; // -22vh
                 const transformMoveY = 20 * copyProgress; // +20vh
                 const copyOpacity = 1 - copyFadeProgress;
@@ -577,11 +599,12 @@
 
             window.addEventListener('scroll', onScroll, { passive: true });
             window.addEventListener('resize', onScroll);
-            
+
             // Initial call
             onScroll();
             requestAnimationFrame(render);
         })();
     </script>
 </body>
+
 </html>

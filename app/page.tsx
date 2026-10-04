@@ -45,92 +45,61 @@ const whatWeMakeServices: ServiceDetailItem[] = [
     {
         num: '01',
         title: 'VISUAL MERCHANDISING',
-        subtitle: 'Windows · Mannequins · Display systems',
-        description: 'Sculpting store displays, architectural plinths, and product clustering that guide customer movement and evoke desire.',
+        subtitle: 'Windows · In-Store Displays · Product Styling',
+        description: 'Window & in-store display concepts, product placement & styling, color, lighting & material curation, and customer journey & visual storytelling.',
         details: [
-            'Windows',
-            'Mannequin styling',
-            'Product clustering',
-            'Cross-merchandising',
-            'Display systems'
+            'Window & in-store display concepts',
+            'Product placement & styling',
+            'Color, lighting & material curation',
+            'Customer journey & visual storytelling',
         ],
-        src: '/props/%40en__gold_.jpeg',
+        src: '/circle corousel/visual merchandising/Visual merchandising .PNG',
         alt: 'Visual Merchandising by ORÉVA'
     },
     {
         num: '02',
-        title: 'STYLING',
-        subtitle: 'Editorial · Campaigns · Lookbooks',
-        description: 'Defining tactile harmony through fabric selection, garment silhouettes, prop curation, and visual narratives.',
+        title: 'SPACE CURATION',
+        subtitle: 'Spatial Planning · Concept Development · Environments',
+        description: 'Spatial planning & zoning, concept development & mood creation, material, furniture & prop selection to create functional, immersive environments.',
         details: [
-            'Editorial styling',
-            'Campaign direction',
-            'Look development',
-            'Prop & product styling',
-            'Visual narratives'
+            'Spatial planning & zoning',
+            'Concept development & mood creation',
+            'Material, furniture & prop selection',
+            'Creating functional, immersive environments',
         ],
-        src: '/props/Background%20image%20.PNG',
-        alt: 'Styling by ORÉVA'
+        src: '/circle corousel/space curration/Space curation .PNG',
+        alt: 'Space Curation by ORÉVA'
     },
     {
         num: '03',
-        title: 'RETAIL CONCEPTS',
-        subtitle: 'Boutiques · Pop-ups · Spatial moodboards',
-        description: 'Building immersive physical spaces and temporary pop-ups framed around spatial moodboards and material direction.',
+        title: 'EDITORIAL STYLING',
+        subtitle: 'Fashion Storytelling · Look Development · Art Direction',
+        description: 'Concept-led fashion storytelling, look development & outfit curation, trend, color & silhouette research, and art direction & visual composition.',
         details: [
-            'Store concepts',
-            'Window concepts',
-            'Pop-ups',
-            'Spatial moodboards',
-            'Material direction'
+            'Concept-led fashion storytelling',
+            'Look development & outfit curation',
+            'Trend, color & silhouette research',
+            'Art direction & visual composition',
         ],
-        src: '/props/Golden%20Mirror%20Aesthetic%20%E2%9C%A8%20Pearls%2C%20Silk%20%26%20White%20Roses.jpeg',
-        alt: 'Retail Concepts by ORÉVA'
+        src: '/circle corousel/editorial styling/Editorial styling .PNG',
+        alt: 'Editorial Styling by ORÉVA'
     },
     {
         num: '04',
         title: 'BRAND EXPERIENCE',
-        subtitle: 'Storytelling · Packaging · Creative direction',
-        description: 'Translating brand identity into spatial environments, customer journeys, packaging touchpoints, and creative direction.',
+        subtitle: 'Identity · Touchpoints · Sensory Storytelling',
+        description: 'Translating brand identity into spaces, creating memorable customer touchpoints, sensory storytelling through visual & material details, and building consistent brand narratives.',
         details: [
-            'Brand storytelling',
-            'Visual identity in space',
-            'Customer journey',
-            'Packaging touchpoints',
-            'Creative direction'
+            'Translating brand identity into spaces',
+            'Creating memorable customer touchpoints',
+            'Sensory storytelling through visual & material details',
+            'Building consistent brand narratives across experiences',
         ],
-        src: '/props/_%20%281%29%20%281%29.jpeg',
+        src: '/circle corousel/brand experience/Brand experience .PNG',
         alt: 'Brand Experience by ORÉVA'
     },
-    {
-        num: '05',
-        title: 'OBJECT COMPOSITION',
-        subtitle: 'Quiet moments · Sculptural harmony',
-        description: 'Composing curated items, jewelry, and luxury objects as quiet, still-life moments of desire.',
-        details: [
-            'Jewelry & Fine Object Placement',
-            'Sculptural & Plinth Composition',
-            'Material & Texture Juxtaposition',
-            'Lighting & Shadow Direction'
-        ],
-        src: '/props/_%20%282%29.jpeg',
-        alt: 'Object Composition by ORÉVA'
-    },
-    {
-        num: '06',
-        title: 'MATERIAL & MOTION',
-        subtitle: 'Travertine · Linen · Brushed metal',
-        description: 'Integrating stone, metal, linen, and subtle motion to create grounded, architectural spatial stories.',
-        details: [
-            'Travertine & Stone Plinths',
-            'Brushed Metal & Glass Frames',
-            'Tactile Linen & Soft Fabrics',
-            'Dynamic Light & Shadow Play'
-        ],
-        src: '/props/_%20%283%29.jpeg',
-        alt: 'Material & Motion by ORÉVA'
-    }
 ];
+
 
 // ─── FLYTHROUGH CONFIG ─────────────────────────────────────────────────────
 const CARD_COUNT = 38;
@@ -315,6 +284,20 @@ function FlythroughSection() {
 
     return (
         <section className="flySection">
+            {/* Soft gradient blend transition from hero photo */}
+            <div
+                className="flySectionTopBlend"
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '28vh',
+                    background: 'linear-gradient(to bottom, #F6F1E7 0%, rgba(246, 241, 231, 0.7) 45%, rgba(239, 236, 229, 0) 100%)',
+                    zIndex: 8,
+                    pointerEvents: 'none',
+                }}
+            />
             {/* WebGL fills the section */}
             <div ref={canvasRef} className="flyCanvas" aria-hidden="true" />
             {/* Centred headline on top */}
@@ -339,34 +322,16 @@ export default function Home() {
         return () => removeEventListener('scroll', f);
     }, []);
 
+    const heroScrollP = typeof window !== 'undefined' && window.innerHeight > 0
+        ? Math.min(1, Math.max(0, scroll / (window.innerHeight * 0.85)))
+        : 0;
+
     return (
         <main>
             {/* NAV */}
             <header className="nav">
                 <div className="navLeft" style={{ cursor: 'none' }}>
-                    <Cursor
-                        attachToParent
-                        variants={{
-                            initial: { height: 10, opacity: 0, scale: 0.5 },
-                            animate: { height: 'auto', opacity: 1, scale: 1 },
-                            exit: { height: 0, opacity: 0, scale: 0.3 },
-                        }}
-                        transition={{
-                            type: 'spring',
-                            duration: 0.3,
-                            bounce: 0.1,
-                        }}
-                        className='overflow-hidden cursorWrapper'
-                        springConfig={{
-                            bounce: 0.01,
-                        }}
-                    >
-                        <img
-                            src="/Screenshot 2026-10-03 at 1.24.15 PM.png"
-                            alt="Creative Direction"
-                            className="cursorImage"
-                        />
-                    </Cursor>
+
                     <a className="logoNavGroup" href="#top" style={{ display: 'inline-flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
                         <img
                             src="/logo/logo.svg"
@@ -417,38 +382,33 @@ export default function Home() {
 
             {/* 1 — HERO */}
             <section id="top" className="hero">
-                {/* Background image at low opacity */}
-                <div className="heroBg" aria-hidden="true" />
+                {/* Background image at low opacity with smooth parallax zoom & blur */}
+                <div
+                    className="heroBg"
+                    aria-hidden="true"
+                    style={{
+                        transform: `scale(${1.04 + heroScrollP * 0.15}) translateY(${heroScrollP * 12}vh)`,
+                        opacity: 0.75,
+                        filter: `blur(${heroScrollP * 8}px)`,
+                        willChange: 'transform, opacity, filter',
+                        transition: 'transform 0.1s ease-out, opacity 0.1s ease-out, filter 0.1s ease-out',
+                    }}
+                />
 
-                <div className="eyebrow" style={{ cursor: 'none' }}>
-                    <Cursor
-                        attachToParent
-                        variants={{
-                            initial: { height: 10, opacity: 0, scale: 0.5 },
-                            animate: { height: 'auto', opacity: 1, scale: 1 },
-                            exit: { height: 0, opacity: 0, scale: 0.3 },
-                        }}
-                        transition={{
-                            type: 'spring',
-                            duration: 0.3,
-                            bounce: 0.1,
-                        }}
-                        className='overflow-hidden cursorWrapper'
-                        springConfig={{
-                            bounce: 0.01,
-                        }}
-                    >
-                        <img
-                            src="/Screenshot 2026-10-03 at 1.24.15 PM.png"
-                            alt="Creative Direction"
-                            className="cursorImage"
-                        />
-                    </Cursor>
+                <div>
                     ORÉVA STUDIO <span>—</span> CREATIVE DIRECTION
                 </div>
 
                 {/* Right-side logo mark with hover animation */}
-                <div className="heroLogoMark" aria-hidden="true">
+                <div
+                    className="heroLogoMark"
+                    aria-hidden="true"
+                    style={{
+                        opacity: Math.max(0, 1 - heroScrollP * 1.6),
+                        transform: `translateY(calc(-50% - ${heroScrollP * 40}px)) scale(${1 - heroScrollP * 0.15})`,
+                        willChange: 'transform, opacity',
+                    }}
+                >
                     <img
                         src="/logo/logo.png"
                         alt=""
@@ -457,7 +417,14 @@ export default function Home() {
                     />
                 </div>
 
-                <div className="heroTitle">
+                <div
+                    className="heroTitle"
+                    style={{
+                        opacity: Math.max(0, 1 - heroScrollP * 1.7),
+                        transform: `translateY(${-heroScrollP * 45}px)`,
+                        willChange: 'transform, opacity',
+                    }}
+                >
                     <h1 className="heroTextLoop">
                         <span style={{ color: '#886539' }}>We</span>{' '}
                         <TextLoop
@@ -511,32 +478,7 @@ export default function Home() {
                         <h2>What do we make?</h2>
                         <p>ORÉVA creates tangible and visual outputs across the retail journey.</p>
                     </div>
-
-                    <div className="makeCards">
-                        {whatWeMakeServices.slice(0, 4).map((service) => (
-                            <div
-                                key={service.num}
-                                className="makeCard"
-                                onClick={() => setSelectedService(service)}
-                                role="button"
-                                tabIndex={0}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        setSelectedService(service);
-                                    }
-                                }}
-                            >
-                                <span className="makeCardNum">{service.num}</span>
-                                <h3 className="makeCardTitle">{service.title}</h3>
-                                <ul className="makeCardList">
-                                    {service.details.map((detail, idx) => (
-                                        <li key={idx}>{detail}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+            </div>
 
                 {/* ENLARGED 3D CIRCULAR CAROUSEL WITH PLINTH BASE */}
                 <div style={{ width: '100%', height: '680px', position: 'relative', marginTop: '1vw', marginBottom: '2vw' }}>

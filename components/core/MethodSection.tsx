@@ -3,39 +3,39 @@ import { useEffect, useRef, useState } from 'react';
 
 const STEPS = [
   {
-    word: 'RESEARCH',
-    label: 'IMAGE PLACEHOLDER 01',
+    word: 'DISCOVER',
     borderColor: '#DED1BC',
-    gradient: 'linear-gradient(160deg, #DED1BC 0%, #4A3828 100%)',
-    image: '/props/%40en__gold_.jpeg',
+    textColor: '#24211D', // heading text on this background
+    accentColor: '#9A723E', // swapping word on this background
+    image: '/method/Discover.PNG',
   },
   {
     word: 'CONCEPT',
-    label: 'IMAGE PLACEHOLDER 02',
     borderColor: '#B8A992',
-    gradient: 'linear-gradient(160deg, #B8A992 0%, #4A3828 100%)',
-    image: '/props/Background%20image%20.PNG',
+    textColor: '#24211D', // heading text on this background
+    accentColor: '#4A3828', // swapping word on this background
+    image: '/method/Concept.PNG',
   },
   {
-    word: 'CURATION',
-    label: 'IMAGE PLACEHOLDER 03',
+    word: 'CURATE',
     borderColor: '#9A723E',
-    gradient: 'linear-gradient(160deg, #9A723E 0%, #24211D 100%)',
-    image: '/props/Golden%20Mirror%20Aesthetic%20%E2%9C%A8%20Pearls%2C%20Silk%20%26%20White%20Roses.jpeg',
+    textColor: '#F6F1E7', // heading text on this background
+    accentColor: '#24211D', // swapping word on this background
+    image: '/method/Curate.PNG',
   },
   {
     word: 'DESIGN',
-    label: 'IMAGE PLACEHOLDER 04',
     borderColor: '#4A3828',
-    gradient: 'linear-gradient(160deg, #4A3828 0%, #24211D 100%)',
-    image: '/props/_%20%281%29%20%281%29.jpeg',
+    textColor: '#F6F1E7', // heading text on this background
+    accentColor: '#DED1BC', // swapping word on this background
+    image: '/method/Design.PNG',
   },
   {
     word: 'EXPERIENCE',
-    label: 'IMAGE PLACEHOLDER 05',
     borderColor: '#24211D',
-    gradient: 'linear-gradient(160deg, #24211D 0%, #9A723E 100%)',
-    image: '/props/_%20%282%29.jpeg',
+    textColor: '#F6F1E7', // heading text on this background
+    accentColor: '#B8A992', // swapping word on this background
+    image: '/method/Experience.PNG',
   },
 ];
 
@@ -47,6 +47,13 @@ export default function MethodSection() {
   const [badgeRot, setBadgeRot] = useState(0);
 
   const currentWordIdx = Math.min(Math.round(p), N - 1);
+
+  // Background layer currently under the heading: the rising wash reaches the heading
+  // (near the top of the stage) late in each sweep, so switch the text colors then.
+  const WASH_REACHES_HEADING = 0.87;
+  let bgIdx = 0;
+  for (let i = 1; i < N; i++) if (p - (i - 1) >= WASH_REACHES_HEADING) bgIdx = i;
+  const { textColor, accentColor } = STEPS[bgIdx];
 
   useEffect(() => {
     const onScroll = () => {
@@ -92,6 +99,27 @@ export default function MethodSection() {
           boxSizing: 'border-box',
         }}
       >
+        {/* ── 0. Background color wash (NEW): each card's border color rises from bottom → top ── */}
+        {STEPS.map((step, i) => {
+          // Layer 0 is always fully visible. Layer i fills as card i becomes the front card.
+          const t = i === 0 ? 1 : Math.max(0, Math.min(1, p - (i - 1)));
+          return (
+            <div
+              key={`wash-${step.word}`}
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 0,
+                backgroundColor: step.borderColor,
+                clipPath: `inset(${(1 - t) * 100}% 0 0 0)`,
+                willChange: 'clip-path',
+                pointerEvents: 'none',
+              }}
+            />
+          );
+        })}
+
         {/* ── 1. Heading (Clear layout with wide uncropped word box) ── */}
         <div
           style={{
@@ -106,7 +134,8 @@ export default function MethodSection() {
               fontWeight: 600,
               fontSize: 'clamp(28px, 4.2vw, 56px)',
               letterSpacing: '0.04em',
-              color: '#24211D',
+              color: textColor,
+              transition: 'color 0.35s ease',
               margin: 0,
               lineHeight: 1.1,
               textTransform: 'uppercase',
@@ -139,15 +168,15 @@ export default function MethodSection() {
                     style={{
                       gridArea: '1 / 1',
                       fontStyle: 'italic',
-                      color: '#9A723E',
+                      color: accentColor,
                       opacity: isActive ? 1 : 0,
                       transform: isActive
                         ? 'translateY(0%)'
                         : isPast
-                        ? 'translateY(-100%)'
-                        : 'translateY(100%)',
+                          ? 'translateY(-100%)'
+                          : 'translateY(100%)',
                       transition:
-                        'transform 0.8s cubic-bezier(.7,0,.2,1), opacity 0.8s cubic-bezier(.7,0,.2,1)',
+                        'transform 0.8s cubic-bezier(.7,0,.2,1), opacity 0.8s cubic-bezier(.7,0,.2,1), color 0.35s ease',
                       willChange: 'transform, opacity',
                       whiteSpace: 'nowrap',
                       paddingRight: '0.2em',
@@ -224,43 +253,6 @@ export default function MethodSection() {
                     display: 'block',
                   }}
                 />
-
-                {/* Palette Gradient Overlay */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: step.gradient,
-                    opacity: 0.5,
-                  }}
-                />
-
-                {/* Diagonal Stripe Overlay */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    backgroundImage:
-                      'repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(246,241,231,0.07) 12px, rgba(246,241,231,0.07) 14px)',
-                  }}
-                />
-
-                {/* Top-left Montserrat label */}
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '18px',
-                    left: '20px',
-                    fontFamily: 'Montserrat, DM Sans, sans-serif',
-                    fontWeight: 300,
-                    fontSize: '9px',
-                    letterSpacing: '0.27em',
-                    textTransform: 'uppercase',
-                    color: '#F6F1E7',
-                  }}
-                >
-                  {step.label}
-                </span>
 
                 {/* Centered bottom step name */}
                 <div

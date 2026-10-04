@@ -897,14 +897,14 @@ const CircularCarousel: React.FC<CircularCarouselProps> = ({
         : `${first ? r : 0} ${last ? r : 0} ${last ? r : 0} ${first ? r : 0}`;
     const offset = back ? along - tile.end : tile.start;
     const size = tile.size;
-    const box =
+    const box: React.CSSProperties =
       axis === 'x'
-        ? { left: -cardW / 2, top: -size / 2, width: cardW, height: size }
-        : { left: -size / 2, top: -cardH / 2, width: size, height: cardH };
-    const photoStyle =
+        ? { left: `${-cardW / 2}px`, top: `${-size / 2}px`, width: `${cardW}px`, height: `${size}px` }
+        : { left: `${-size / 2}px`, top: `${-cardH / 2}px`, width: `${size}px`, height: `${cardH}px` };
+    const photoStyle: React.CSSProperties =
       axis === 'x'
-        ? { left: 0, top: -offset, width: cardW, height: cardH }
-        : { left: -offset, top: 0, width: cardW, height: cardH };
+        ? { left: 0, top: `${-offset}px`, width: `${cardW}px`, height: `${cardH}px` }
+        : { left: `${-offset}px`, top: 0, width: `${cardW}px`, height: `${cardH}px` };
     const flip = axis === 'x' ? ' rotateX(180deg)' : ' rotateY(180deg)';
     return (
       <div
