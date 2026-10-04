@@ -44,7 +44,9 @@ export function AnimatedBackground({
 
   return (
     <div style={{ position: 'relative', display: 'flex', flexDirection: 'row' }}>
-      {Children.map(children, (child) => {
+      {Children.map(children, (childElement) => {
+        const child = childElement as React.ReactElement<any>;
+        if (!child || !child.props) return childElement;
         const id = child.props['data-id'] as string;
         const isActive = displayed === id;
 

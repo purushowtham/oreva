@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ORÉVA — Hero to Page 2 Transition</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ─── BRAND TOKENS & RESET ─── */
+        :root {
+            --warm-ivory: #F6F1E7;
+            --champagne-beige: #DED1BC;
+            --taupe: #B8A992;
+            --antique-bronze: #9A723E;
+            --dark-brown: #4A3828;
+            --soft-black: #24211D;
+
+            --font-headline: 'Cormorant Garamond', 'DM Serif Display', Georgia, serif;
+            --font-label: 'Montserrat', 'DM Sans', sans-serif;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            background-color: var(--soft-black);
+            color: var(--dark-brown);
+            font-family: var(--font-label);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── TALL SCROLL TRACK & PINNED STAGE ─── */
+        .scroll-track {
+            height: 360vh;
+            position: relative;
+        }
+
+        .stage {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+
+        /* ─── LAYER 1: HERO LAYER (z-index: 1) ─── */
+        .hero-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background-color: #8C775D;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Full-bleed oversized hero image placeholder */
+        .hero-bg-wrap {
+            position: absolute;
+            top: -3%;
+            left: -3%;
+            width: 106%;
+            height: 106%;
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .hero-bg {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 60% 40%, #9E8970 0%, #8C775D 55%, #6B5B47 100%);
+            position: relative;
+        }
+
+        /* Subtle diagonal stripe overlay for tactile warm interior photo feel */
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(222, 209, 188, 0.035),
+                rgba(222, 209, 188, 0.035) 2px,
+                transparent 2px,
+                transparent 14px
+            );
+            pointer-events: none;
+        }
+
+        /* Hero Image Placeholder Label */
+        .hero-bg-label {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            font-family: var(--font-label);
+            font-size: 11px;
+            letter-spacing: 0.35em;
+            color: rgba(222, 209, 188, 0.4);
+            border: 1px solid rgba(222, 209, 188, 0.2);
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+
+        /* Centered Headline Copy */
+        .hero-copy {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            will-change: transform, opacity;
+            padding: 0 20px;
+        }
+
+        .hero-headline {
+            font-family: var(--font-headline);
+            font-weight: 600;
+            font-size: clamp(4rem, 15vw, 13rem);
+            line-height: 0.88;
+            color: var(--warm-ivory);
+            letter-spacing: -0.02em;
+            text-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .hero-line-we {
+            display: block;
+            will-change: transform;
+        }
+
+        .hero-line-transform {
+            display: block;
+            font-style: italic;
+            color: var(--champagne-beige);
+            will-change: transform;
+        }
+
+        .hero-subtitle {
+            margin-top: 36px;
+            font-family: var(--font-label);
+            font-weight: 400;
+            font-size: clamp(10px, 1.2vw, 14px);
+            letter-spacing: 0.32em;
+            color: var(--taupe);
+            text-transform: uppercase;
+        }
+
+        /* Scroll Hint */
+        .scroll-hint {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            font-family: var(--font-label);
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            color: var(--champagne-beige);
+            text-transform: uppercase;
+            opacity: 0.8;
+            will-change: opacity;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scroll-hint::after {
+            content: '';
+            width: 1px;
+            height: 18px;
+            background: linear-gradient(to bottom, var(--champagne-beige), transparent);
+            animation: pulseScroll 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseScroll {
+            0%, 100% { opacity: 0.3; transform: scaleY(0.7); }
+            50% { opacity: 1; transform: scaleY(1); }
+        }
+
+        /* ─── LAYER 2: PAGE 2 LAYER (z-index: 2, clip-path iris) ─── */
+        .page2-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            background-color: var(--warm-ivory);
+            overflow: hidden;
+            will-change: clip-path;
+            /* Default initial clip (hidden) */
+            clip-path: circle(0px at 78% 26%);
+        }
+
+        /* Heading on Page 2 */
+        .page2-heading {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            width: 90%;
+            max-width: 800px;
+            will-change: opacity, transform;
+            opacity: 0;
+        }
+
+        .page2-label {
+            font-family: var(--font-label);
+            font-size: clamp(10px, 1.1vw, 13px);
+            font-weight: 400;
+            letter-spacing: 0.3em;
+            color: var(--antique-bronze);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .page2-title {
+            font-family: var(--font-headline);
+            font-weight: 600;
+            font-size: clamp(2.2rem, 5.5vw, 4.8rem);
+            line-height: 1.1;
+            color: var(--dark-brown);
+        }
+
+        .page2-title i {
+            font-style: italic;
+            color: var(--antique-bronze);
+        }
+
+        /* Scatter Container for 7 Framed Photos */
+        .photos-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .photo-card {
+            position: absolute;
+            aspect-ratio: 3 / 4;
+            background-color: #FFFFFF;
+            padding: 6px;
+            border-radius: 2px;
+            box-shadow: 0 12px 30px rgba(36, 33, 29, 0.15), 0 2px 6px rgba(36, 33, 29, 0.08);
+            will-change: transform, opacity;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .photo-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--champagne-beige);
+        }
+
+        .photo-placeholder-text {
+            font-family: var(--font-label);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: var(--dark-brown);
+            opacity: 0.7;
+            font-weight: 400;
+            text-align: center;
+            padding: 4px;
+        }
+
+        .photo-mat-border {
+            position: absolute;
+            inset: 4px;
+            border: 1px solid rgba(184, 169, 146, 0.4);
+            pointer-events: none;
+        }
+
+        /* ─── LAYER 3: BRONZE RING (z-index: 3) ─── */
+        .ring-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .ring-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .ring-circle {
+            fill: none;
+            stroke: var(--antique-bronze);
+            stroke-width: 10px;
+            will-change: r, stroke-width, opacity;
+        }
+
+        /* Responsive overrides */
+        @media (max-width: 768px) {
+            .page2-layer {
+                clip-path: circle(0px at 70% 26%);
+            }
+            .hero-bg-label {
+                bottom: 20px;
+                left: 20px;
+                font-size: 9px;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            .hero-bg-wrap, .hero-copy, .page2-layer, .page2-heading, .photo-card, .ring-circle {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── SCROLL TRACK & PINNED STAGE ─── -->
+    <div class="scroll-track" id="scrollTrack">
+        <div class="stage" id="stage">
+            
+            <!-- ─── HERO LAYER (Z-1) ─── -->
+            <div class="hero-layer">
+                <div class="hero-bg-wrap" id="heroBgWrap">
+                    <div class="hero-bg"></div>
+                    <div class="hero-bg-label">HERO IMAGE PLACEHOLDER</div>
+                </div>
+
+                <div class="hero-copy" id="heroCopy">
+                    <img src="/logo/logo.svg" alt="ORÉVA Logo" style="width: clamp(54px, 6vw, 90px); height: auto; margin-bottom: 24px; filter: drop-shadow(0 6px 20px rgba(154, 114, 62, 0.4)); opacity: 0.95;" />
+                    <h1 class="hero-headline">
+                        <span class="hero-line-we" id="heroLineWe">We</span>
+                        <span class="hero-line-transform" id="heroLineTransform">Transform</span>
+                    </h1>
+                    <p class="hero-subtitle">VISUAL MERCHANDISING · STYLING · RETAIL CONCEPTS</p>
+                </div>
+
+                <div class="scroll-hint" id="scrollHint">SCROLL</div>
+            </div>
+
+            <!-- ─── PAGE 2 LAYER (Z-2, revealed by clip-path circle) ─── -->
+            <div class="page2-layer" id="page2Layer">
+                <div class="page2-heading" id="page2Heading">
+                    <span class="page2-label">SELECTED OBJECTS</span>
+                    <h2 class="page2-title">Materials, <i>composed</i> with intent.</h2>
+                </div>
+
+                <!-- 7 Scattered Framed Photos Container -->
+                <div class="photos-container" id="photosContainer"></div>
+            </div>
+
+            <!-- ─── BRONZE RING LAYER (Z-3) ─── -->
+            <div class="ring-layer">
+                <svg class="ring-svg" id="ringSvg">
+                    <circle class="ring-circle" id="ringCircle" cx="78%" cy="26%" r="40" />
+                </svg>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ─── VANILLA JS & DATA DRIVEN ANIMATION LOGIC ─── -->
+    <script>
+        (function() {
+            // Data-driven photo array (7 small framed photos)
+            const photosData = [
+                { id: 'IMG 01', title: 'TRAVERTINE', widthVw: 8.5, minPx: 72, left: '10%', depth: 0.7, tilt: -4.5, startP: 0.32, bg: 'radial-gradient(circle, #EADFCE, #B8A992)' },
+                { id: 'IMG 02', title: 'SILK SILHOUETTE', widthVw: 10.0, minPx: 84, left: '23%', depth: 1.2, tilt: 3.8, startP: 0.345, bg: 'radial-gradient(circle, #F6F1E7, #DED1BC)' },
+                { id: 'IMG 03', title: 'BRUSHED BRONZE', widthVw: 7.0, minPx: 64, left: '38%', depth: 0.9, tilt: -2.2, startP: 0.37, bg: 'radial-gradient(circle, #C4A57B, #9A723E)' },
+                { id: 'IMG 04', title: 'ARCHITECTURAL', widthVw: 10.5, minPx: 88, left: '52%', depth: 1.5, tilt: 5.5, startP: 0.395, bg: 'radial-gradient(circle, #DED1BC, #A6957B)' },
+                { id: 'IMG 05', title: 'EDITORIAL', widthVw: 7.5, minPx: 68, left: '67%', depth: 0.8, tilt: -5.0, startP: 0.42, bg: 'radial-gradient(circle, #E5DCCC, #B8A992)' },
+                { id: 'IMG 06', title: 'RAW MARBLE', widthVw: 9.0, minPx: 78, left: '80%', depth: 1.1, tilt: -3.0, startP: 0.445, bg: 'radial-gradient(circle, #D5C7B1, #8C7B65)' },
+                { id: 'IMG 07', title: 'GLASS STUDY', widthVw: 8.0, minPx: 70, left: '44%', depth: 1.3, tilt: 4.2, startP: 0.47, bg: 'radial-gradient(circle, #F6F1E7, #B8A992)' }
+            ];
+
+            // DOM Elements
+            const scrollTrack = document.getElementById('scrollTrack');
+            const heroBgWrap = document.getElementById('heroBgWrap');
+            const heroCopy = document.getElementById('heroCopy');
+            const heroLineWe = document.getElementById('heroLineWe');
+            const heroLineTransform = document.getElementById('heroLineTransform');
+            const scrollHint = document.getElementById('scrollHint');
+            const page2Layer = document.getElementById('page2Layer');
+            const page2Heading = document.getElementById('page2Heading');
+            const photosContainer = document.getElementById('photosContainer');
+            const ringCircle = document.getElementById('ringCircle');
+
+            // Render 7 Photo Cards
+            const photoElements = photosData.map(data => {
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+                card.style.width = `max(${data.widthVw}vw, ${data.minPx}px)`;
+                card.style.left = data.left;
+                card.style.bottom = '18vh'; // Rest vertical center area
+
+                card.innerHTML = `
+                    <div class="photo-inner" style="background: ${data.bg}">
+                        <div class="photo-mat-border"></div>
+                        <div class="photo-placeholder-text">${data.id}</div>
+                    </div>
+                `;
+                photosContainer.appendChild(card);
+                return { element: card, data: data };
+            });
+
+            // Smooth Lerp State
+            let targetP = 0;
+            let currentP = 0;
+            const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // Easing functions
+            function easeInOutCubic(t) {
+                return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            }
+
+            function easeOutCubic(t) {
+                return 1 - Math.pow(1 - t, 3);
+            }
+
+            function clamp(val, min, max) {
+                return Math.max(min, Math.min(max, val));
+            }
+
+            // Calculate progress & render frame
+            function render() {
+                // Lerp calculation
+                if (isReducedMotion) {
+                    currentP = targetP;
+                } else {
+                    currentP += (targetP - currentP) * 0.1;
+                    if (Math.abs(targetP - currentP) < 0.0001) {
+                        currentP = targetP;
+                    }
+                }
+
+                const p = currentP;
+                const windowW = window.innerWidth;
+                const windowH = window.innerHeight;
+                const isMobile = windowW <= 768;
+
+                // Center coordinates for ring & iris
+                const cxPercent = isMobile ? 70 : 78;
+                const cyPercent = 26;
+                const cxPx = (cxPercent / 100) * windowW;
+                const cyPx = (cyPercent / 100) * windowH;
+
+                // 1. SCROLL HINT (fades out in first 8%)
+                const hintOpacity = 1 - clamp(p / 0.08, 0, 1);
+                scrollHint.style.opacity = hintOpacity.toFixed(3);
+
+                // 2. HERO COPY (p 0 to 0.38)
+                const copyProgress = clamp(p / 0.38, 0, 1);
+                const copyFadeProgress = clamp(p / 0.34, 0, 1);
+                
+                const weMoveY = -22 * copyProgress; // -22vh
+                const transformMoveY = 20 * copyProgress; // +20vh
+                const copyOpacity = 1 - copyFadeProgress;
+
+                heroLineWe.style.transform = `translateY(${weMoveY}vh)`;
+                heroLineTransform.style.transform = `translateY(${transformMoveY}vh)`;
+                heroCopy.style.opacity = copyOpacity.toFixed(3);
+
+                // HERO BACKGROUND ZOOM & DRIFT (p 0 to 1)
+                const bgScale = 1 + 0.25 * p; // 1 to 1.25
+                const bgDriftY = -4 * p; // drifts up 4%
+                heroBgWrap.style.transform = `scale(${bgScale.toFixed(4)}) translateY(${bgDriftY.toFixed(2)}%)`;
+
+                // 3. RING TO IRIS (p 0 to 0.55)
+                // Farthest screen corner distance
+                const dBL = Math.hypot(cxPx, windowH - cyPx);
+                const dTL = Math.hypot(cxPx, cyPx);
+                const dBR = Math.hypot(windowW - cxPx, windowH - cyPx);
+                const dTR = Math.hypot(windowW - cxPx, cyPx);
+                const maxRadius = Math.max(dBL, dTL, dBR, dTR);
+
+                const irisP = clamp(p / 0.55, 0, 1);
+                const irisEase = easeInOutCubic(irisP);
+                const currentR = maxRadius * irisEase;
+
+                // Update Page 2 clip-path
+                page2Layer.style.clipPath = `circle(${currentR.toFixed(1)}px at ${cxPercent}% ${cyPercent}%)`;
+
+                // Bronze Ring animation
+                // Ring radius starts slightly larger than R (e.g. 40px initially) and converges onto R
+                const initialRingR = isMobile ? 32 : 44;
+                const ringRadius = currentR + (initialRingR * (1 - irisEase));
+                const ringStrokeWidth = 10 - (8 * irisEase); // 10px to 2px
+
+                // Fade out ring between p 0.50 and 0.62
+                let ringOpacity = 1;
+                if (p > 0.50) {
+                    ringOpacity = 1 - clamp((p - 0.50) / (0.62 - 0.50), 0, 1);
+                }
+
+                ringCircle.setAttribute('cx', `${cxPercent}%`);
+                ringCircle.setAttribute('cy', `${cyPercent}%`);
+                ringCircle.setAttribute('r', Math.max(0, ringRadius).toFixed(1));
+                ringCircle.setAttribute('stroke-width', ringStrokeWidth.toFixed(2));
+                ringCircle.style.opacity = ringOpacity.toFixed(3);
+
+                // 4. PAGE 2 OBJECTS (SCATTERED PHOTOS, from p 0.32)
+                photoElements.forEach(({ element, data }) => {
+                    if (p < data.startP) {
+                        element.style.opacity = '0';
+                        element.style.transform = `translate3d(0, 100vh, 0) rotate(${data.tilt * 3.5}deg)`;
+                        return;
+                    }
+
+                    const itemP = clamp((p - data.startP) / (0.92 - data.startP), 0, 1);
+                    const itemEase = easeOutCubic(itemP);
+
+                    // Travel distance: 60vh + depth * 40vh
+                    const travelDistVh = 60 + data.depth * 40;
+                    const currentYVh = (1 - itemEase) * travelDistVh;
+
+                    // Rotation: from 3.5x tilt down to rest tilt
+                    const currentTilt = (data.tilt * 3.5) * (1 - itemEase) + data.tilt * itemEase;
+
+                    // Opacity: fade in fast
+                    const itemOpacity = clamp(itemP / 0.15, 0, 1);
+
+                    element.style.opacity = itemOpacity.toFixed(3);
+                    element.style.transform = `translate3d(0, ${currentYVh.toFixed(2)}vh, 0) rotate(${currentTilt.toFixed(2)}deg)`;
+                });
+
+                // 5. PAGE 2 HEADING (p 0.58 to 0.83)
+                if (p < 0.58) {
+                    page2Heading.style.opacity = '0';
+                    page2Heading.style.transform = 'translate(-50%, calc(-50% + 30px))';
+                } else {
+                    const headP = clamp((p - 0.58) / (0.83 - 0.58), 0, 1);
+                    const headEase = easeOutCubic(headP);
+                    const headYOffset = (1 - headEase) * 30; // 30px to 0px
+
+                    page2Heading.style.opacity = headEase.toFixed(3);
+                    page2Heading.style.transform = `translate(-50%, calc(-50% + ${headYOffset.toFixed(1)}px))`;
+                }
+
+                // Continue loop
+                requestAnimationFrame(render);
+            }
+
+            // Scroll listener to update targetP
+            function onScroll() {
+                const trackRect = scrollTrack.getBoundingClientRect();
+                const totalScrollable = scrollTrack.offsetHeight - window.innerHeight;
+                if (totalScrollable <= 0) return;
+
+                const currentScroll = -trackRect.top;
+                targetP = clamp(currentScroll / totalScrollable, 0, 1);
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', onScroll);
+            
+            // Initial call
+            onScroll();
+            requestAnimationFrame(render);
+        })();
+    </script>
+</body>
+</html>

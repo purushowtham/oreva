@@ -6,6 +6,8 @@ import { Menu as MenuIcon } from 'lucide-react';
 import { AnimatedBackground } from '../components/core/animated-background';
 import CircularCarousel from '../components/core/CircularCarousel';
 import MethodSection from '../components/core/MethodSection';
+import ProjectShowcaseSection from '../components/core/ProjectShowcaseSection';
+import HeroTransitionSection from '../components/core/HeroTransitionSection';
 
 // ─── DATA ──────────────────────────────────────────────────────────────────
 const services = [
@@ -193,11 +195,11 @@ function FlythroughSection() {
             }
 
             // Load all unique textures once, then cycle via index
-            interface TexInfo { tex: THREE.Texture; aspect: number }
+            interface TexInfo { tex: any; aspect: number }
             const loaded: (TexInfo | null)[] = new Array(IMAGES.length).fill(null);
 
             IMAGES.forEach((url, idx) => {
-                loader.load(url, (t) => {
+                loader.load(url, (t: any) => {
                     t.colorSpace = THREE.SRGBColorSpace;
                     const img = t.image as HTMLImageElement;
                     const aspect = img.naturalWidth && img.naturalHeight
@@ -206,7 +208,7 @@ function FlythroughSection() {
                 });
             });
 
-            interface Card { mesh: THREE.Mesh; slot: number }
+            interface Card { mesh: any; slot: number }
             const cards: Card[] = [];
 
             function buildCard(slot: number, initialZ: boolean) {
@@ -266,7 +268,7 @@ function FlythroughSection() {
                     const t = Math.max(0, Math.min(1, 1 - dist / DEPTH));
                     const smooth = t * t * (3 - 2 * t);
                     const fadein = Math.min(1, t / 0.06);
-                    const mat = mesh.material as THREE.MeshBasicMaterial;
+                    const mat = mesh.material as any;
                     mat.opacity = Math.min(smooth, fadein) * 0.88 + 0.08;
 
                     // Swap texture in once loaded (if it wasn't ready at build time)
@@ -286,7 +288,7 @@ function FlythroughSection() {
                     if (mesh.position.z > camera.position.z - NEAR_CULL) {
                         scene.remove(mesh);
                         mesh.geometry.dispose();
-                        (mesh.material as THREE.Material).dispose();
+                        (mesh.material as any).dispose();
                         const idx = cards.indexOf(card);
                         const nc = buildCard(card.slot, false);
                         cards[idx] = nc;
@@ -365,7 +367,17 @@ export default function Home() {
                             className="cursorImage"
                         />
                     </Cursor>
-                    <a className="logo" href="#top">ORÉVA<br /><span className="logoSub">STUDIO</span></a>
+                    <a className="logoNavGroup" href="#top" style={{ display: 'inline-flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
+                        <img
+                            src="/logo/logo.svg"
+                            alt="ORÉVA Studio Logo"
+                            style={{ height: '42px', width: 'auto', display: 'block', filter: 'drop-shadow(0 2px 8px rgba(154,114,62,0.25))' }}
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '30px', letterSpacing: '0.12em', color: '#4A3828', fontWeight: 600, lineHeight: 1 }}>ORÉVA</span>
+                            <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '9px', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#9A723E', marginTop: '3px' }}>STUDIO</span>
+                        </div>
+                    </a>
                 </div>
 
                 <div className="navRight">
@@ -438,7 +450,7 @@ export default function Home() {
                 {/* Right-side logo mark with hover animation */}
                 <div className="heroLogoMark" aria-hidden="true">
                     <img
-                        src="/logo/logo.svg"
+                        src="/logo/logo.png"
                         alt=""
                         className="heroLogo"
                         draggable={false}
@@ -489,31 +501,34 @@ export default function Home() {
             {/* 2 — THREE.JS FLYTHROUGH (full-screen, after first scroll) */}
             <FlythroughSection />
 
-            {/* 3 — STATEMENT, WHAT DO WE MAKE & ENLARGED 3D CIRCULAR CAROUSEL */}
-            <section className="statementSection" style={{ position: 'relative' }}>
+            {/* 3 — WHAT DO WE MAKE & 3D CIRCULAR CAROUSEL */}
+            <section className="whatWeMakeSection">
+                {/* Subtle luxury transition mask from flythrough */}
+                <div className="whatWeMakeTransitionMask" />
 
-                {/* WHAT DO WE MAKE TABLE GRID */}
-                <div className="whatWeMakeContainer" style={{ padding: '0 6vw 4vw' }}>
-                    <div className="whatWeMakeHeader" style={{ marginBottom: '32px' }}>
-                        <h2 style={{ font: "400 clamp(36px, 5vw, 64px)/1.05 'Cormorant Garamond', Georgia, serif", margin: '0 0 12px', color: '#4A3828', letterSpacing: '-0.02em' }}>
-                            What do we make?
-                        </h2>
-                        <p style={{ font: "400 18px 'Cormorant Garamond', Georgia, serif", color: '#4A3828', opacity: 0.85, margin: 0, letterSpacing: '0.02em' }}>
-                            ORÉVA creates tangible and visual outputs across the retail journey.
-                        </p>
+                <div className="whatWeMakeContainer">
+                    <div className="whatWeMakeHeader">
+                        <h2>What do we make?</h2>
+                        <p>ORÉVA creates tangible and visual outputs across the retail journey.</p>
                     </div>
 
-                    <div className="whatWeMakeGrid">
+                    <div className="makeCards">
                         {whatWeMakeServices.slice(0, 4).map((service) => (
                             <div
                                 key={service.num}
-                                className="whatWeMakeCol"
+                                className="makeCard"
                                 onClick={() => setSelectedService(service)}
-                                style={{ cursor: 'pointer' }}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        setSelectedService(service);
+                                    }
+                                }}
                             >
-                                <span className="colNum">{service.num}</span>
-                                <h3 className="colTitle">{service.title}</h3>
-                                <ul className="colList">
+                                <span className="makeCardNum">{service.num}</span>
+                                <h3 className="makeCardTitle">{service.title}</h3>
+                                <ul className="makeCardList">
                                     {service.details.map((detail, idx) => (
                                         <li key={idx}>{detail}</li>
                                     ))}
@@ -553,111 +568,11 @@ export default function Home() {
             {/* 3b — METHOD JOURNEY (after circular carousel) */}
             <MethodSection />
 
-            {/* 4 — GALLERY */}
-            <section className="gallery">
-                <div className="gallerySticky">
-                    <div className="scene">
-                        <div className="orb"></div>
-                        <div className="ring big"></div>
-                        <div className="frame"></div>
-                        <div className="stone"></div>
-                        <div className="sceneText">
-                            <small>THE OBJECT</small>
-                            <h2>Material<br /><i>in motion.</i></h2>
-                        </div>
-                    </div>
-                </div>
-                <div className="galleryCopy">
-                    <article><small>01 — THE OBJECT</small><h3>Form creates the first invitation.</h3></article>
-                    <article><small>02 — THE MATERIAL</small><h3>Texture gives space its memory.</h3></article>
-                    <article><small>03 — THE DETAIL</small><h3>Desire lives in what we notice closely.</h3></article>
-                    <article><small>04 — THE DESIRE</small><h3>Experience is what remains.</h3></article>
-                </div>
-            </section>
+            {/* 3c — PROJECT SHOWCASE (after method section) */}
+            <ProjectShowcaseSection />
 
-            {/* 5 — SERVICES */}
-            <section id="services" className="services">
-                <div className="sectionHead">
-                    <small>03 / WHAT WE CREATE</small>
-                    <h2>THE ORÉVA<br /><i>CABINET.</i></h2>
-                </div>
-                <div className="cabinet">
-                    {services.map((s, i) => (
-                        <article className="service" key={s[0]}>
-                            <span>{s[0]}</span>
-                            <div><h3>{s[1]}</h3><p>{s[2]}</p></div>
-                            <b>↗</b>
-                            <div className={'serviceShape s' + i}></div>
-                        </article>
-                    ))}
-                </div>
-            </section>
-
-            {/* 6 — WORK */}
-            <section id="work" className="work">
-                <div className="sectionHead">
-                    <small>04 / SELECTED WORK</small>
-                    <h2>A VISUAL<br /><i>JOURNAL.</i></h2>
-                </div>
-                <div className="workGrid">
-                    {work.map((p, i) => (
-                        <article className={'project p' + i} key={p[0]}>
-                            <div className="projectImage">
-                                {/* Cycle real photos; mod by IMAGES.length */}
-                                <img
-                                    src={IMAGES[i % IMAGES.length]}
-                                    alt={p[1]}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                                />
-                            </div>
-                            <div className="meta">
-                                <small>{p[0]} — {p[1]}</small>
-                                <strong>{p[2]}</strong>
-                                <p>{p[3]}</p>
-                            </div>
-                        </article>
-                    ))}
-                </div>
-            </section>
-
-            {/* 8 — STUDIO */}
-            <section id="studio" className="studio">
-                <div className="studioImage">
-                    <img
-                        src={IMAGES[4 % IMAGES.length]}
-                        alt="ORÉVA editorial"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    />
-                </div>
-                <div className="studioText">
-                    <small>06 / STUDIO</small>
-                    <h2>A MORE BEAUTIFUL WAY<br />TO <i>EXPERIENCE.</i></h2>
-                    <p>Quiet. Editorial. Tactile. Architectural. Emotional. Contemporary.</p>
-                    <p>ORÉVA builds visual worlds for fashion, jewellery, luxury retail, boutiques and emerging brands.</p>
-                    <div className="miniMark">O</div>
-                </div>
-            </section>
-
-            {/* 9 — JOURNAL */}
-            <section id="journal" className="journal">
-                <div className="sectionHead">
-                    <small>07 / MATERIAL · MOOD · MEANING</small>
-                    <h2>THE PRIVATE<br /><i>NOTEBOOK.</i></h2>
-                </div>
-                <div className="materialStrip">
-                    {materials.map((m, i) => (
-                        <article key={m[0]}>
-                            <div className="mat" style={{
-                                backgroundImage: `url(${IMAGES[i % IMAGES.length]})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                            }}></div>
-                            <small>{m[0]}</small>
-                            <p>{m[1]}</p>
-                        </article>
-                    ))}
-                </div>
-            </section>
+            {/* 3d — HERO TO PAGE 2 SCROLL TRANSITION (before footer) */}
+            <HeroTransitionSection />
 
             {/* 10 — CONTACT */}
             <section id="contact" className="contact">

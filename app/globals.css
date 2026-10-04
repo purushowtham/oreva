@@ -146,86 +146,171 @@
   opacity: 0.6 !important;
 }
 
-/* ── What Do We Make Grid ─────────────────────────────────────────────────── */
-.whatWeMakeGrid {
+/* ── What Do We Make Section & Blur-Scale Hover Cards ─────────────────────── */
+.whatWeMakeSection {
+  background: var(--ivory);
+  position: relative;
+  width: 100%;
+  /* Smooth luxury transition from the preceding flythrough section */
+  border-top: 1px solid rgba(154, 114, 62, 0.2);
+}
+
+.whatWeMakeTransitionMask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(239, 236, 229, 0.6) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.whatWeMakeContainer {
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+  padding: clamp(60px, 8vh, 100px) 24px clamp(40px, 6vh, 60px);
+  box-sizing: border-box;
+}
+
+.whatWeMakeHeader {
+  margin-bottom: clamp(32px, 5vh, 48px);
+}
+
+.whatWeMakeHeader h2 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(38px, 6vw, 72px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--brown);
+  margin: 0 0 14px;
+}
+
+.whatWeMakeHeader p {
+  font-family: Montserrat, sans-serif;
+  font-weight: 300;
+  font-size: clamp(15px, 1.5vw, 18px);
+  color: var(--brown);
+  opacity: 0.85;
+  margin: 0;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+}
+
+/* 4 Boxes Grid */
+.makeCards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border: 1px solid rgba(74, 56, 40, 0.25);
-  background: var(--ivory);
+  gap: 15px;
+  width: 100%;
+  position: relative;
 }
 
-.whatWeMakeCol {
-  border-right: 1px solid rgba(74, 56, 40, 0.25);
-  padding: 24px 22px 28px;
+.makeCard {
+  background: var(--champ);
+  border: 1px solid var(--taupe);
+  border-radius: 10px;
+  color: var(--brown);
+  min-height: 360px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
-  transition: background 0.3s ease, transform 0.25s ease;
+  box-sizing: border-box;
+  text-decoration: none;
+  position: relative;
 }
 
-.whatWeMakeCol:last-child {
-  border-right: none;
-}
-
-.whatWeMakeCol:hover {
-  background: rgba(154, 114, 62, 0.08);
-}
-
-.colNum {
+.makeCardNum {
+  font-family: Montserrat, sans-serif;
   font-size: 11px;
-  letter-spacing: 0.15em;
-  color: var(--brown);
-  opacity: 0.7;
-  margin-bottom: 24px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--bronze);
+  font-weight: 400;
+  margin-bottom: 14px;
   display: block;
 }
 
-.colTitle {
+.makeCardTitle {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 24px;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: clamp(22px, 2vw, 30px);
+  letter-spacing: 0.05em;
   line-height: 1.15;
   color: var(--brown);
-  letter-spacing: 0.02em;
-  margin: 0 0 28px;
-  min-height: 54px;
   text-transform: uppercase;
+  min-height: 2.3em;
+  margin: 0 0 24px;
 }
 
-.colList {
-  margin: 0;
+.makeCardList {
+  margin: auto 0 0 0;
   padding: 0;
   list-style: none;
-  font-size: 12px;
-  line-height: 1.85;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: Montserrat, sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.6;
   color: var(--brown);
-  opacity: 0.88;
+  opacity: 0.9;
 }
 
-.colList li {
-  margin-bottom: 3px;
+.makeCardList li {
+  margin: 0;
+  padding: 0;
 }
 
-@media(max-width: 900px) {
-  .whatWeMakeGrid {
-    grid-template-columns: 1fr 1fr;
+/* ── Hover Transition (Focus hovered, blur/shrink others) ── */
+@media (hover: hover) {
+  .makeCards .makeCard {
+    transition: transform 400ms cubic-bezier(0.2, 0, 0.2, 1),
+                filter 400ms cubic-bezier(0.2, 0, 0.2, 1),
+                opacity 400ms cubic-bezier(0.2, 0, 0.2, 1);
+    cursor: pointer;
+    will-change: transform, filter, opacity;
   }
-  .whatWeMakeCol {
-    border-bottom: 1px solid rgba(74, 56, 40, 0.25);
+
+  .makeCards .makeCard:hover {
+    transform: scale(1.05);
+    z-index: 2;
+    box-shadow: 0 16px 36px rgba(74, 56, 40, 0.12);
   }
-  .whatWeMakeCol:nth-child(2n) {
-    border-right: none;
-  }
-  .serviceModalCard {
-    grid-template-columns: 1fr !important;
+
+  .makeCards:hover > .makeCard:not(:hover) {
+    filter: blur(8px);
+    opacity: 0.7;
+    transform: scale(0.95);
   }
 }
 
-@media(max-width: 550px) {
-  .whatWeMakeGrid {
+@media (max-width: 1000px) {
+  .makeCards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .makeCards {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
-  .whatWeMakeCol {
-    border-right: none;
+  .makeCard {
+    min-height: auto;
+    padding: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .makeCards .makeCard {
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
   }
 }
 
