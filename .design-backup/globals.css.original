@@ -17,8 +17,6 @@ html {
   scroll-behavior: smooth
 }
 
-section[id] { scroll-margin-top: 88px; }
-
 body {
   margin: 0;
   background: rgba(246, 241, 231, 0.85);
@@ -1168,75 +1166,6 @@ footer {
   border-top: 1px solid rgba(154, 114, 62, 0.2);
 }
 
-.servicesMethodBridge {
-  min-height: 120px;
-  padding: 24px 24px 38px;
-  background: #DED1BC;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.servicesMethodBridge > span {
-  color: var(--bronze);
-  font-size: 10px;
-  letter-spacing: .28em;
-}
-
-.servicesMethodBridge p {
-  margin: 18px 0 24px;
-  font: 400 clamp(32px, 4vw, 60px)/1.05 'Cormorant Garamond', Georgia, serif;
-  color: var(--brown);
-}
-
-.servicesMethodBridge a {
-  display: inline-flex;
-  align-items: center;
-  gap: 18px;
-  padding-bottom: 9px;
-  border-bottom: 1px solid var(--bronze);
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  margin-top: 12px;
-}
-
-.servicesMethodBridge::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  height: 26px;
-  border-left: 1px solid var(--bronze);
-}
-
-.method-stage::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  height: 62px;
-  z-index: 1;
-  border-left: 1px solid var(--bronze);
-  pointer-events: none;
-}
-
-@media (max-width: 640px) {
-  .method-stage h2 {
-    flex-wrap: wrap !important;
-    font-size: clamp(25px, 7vw, 32px) !important;
-    gap: .1em !important;
-  }
-
-  .method-stage h2 > span:nth-child(2) {
-    width: 100% !important;
-    text-align: center !important;
-  }
-}
-
 .whatWeMakeTransitionMask {
   position: absolute;
   top: 0;
@@ -1251,18 +1180,12 @@ footer {
   max-width: 1240px;
   margin: 0 auto;
   width: 100%;
-  padding: clamp(34px, 5vh, 60px) 24px 8px;
+  padding: clamp(60px, 8vh, 100px) 24px clamp(40px, 6vh, 60px);
   box-sizing: border-box;
 }
 
 .whatWeMakeHeader {
-  margin-bottom: 20px;
-}
-
-.whatWeMakeCarousel {
-  width: 100%;
-  height: clamp(500px, 78vh, 560px);
-  position: relative;
+  margin-bottom: clamp(32px, 5vh, 48px);
 }
 
 .whatWeMakeHeader h2 {
@@ -1284,12 +1207,6 @@ footer {
   margin: 0;
   letter-spacing: 0.01em;
   line-height: 1.5;
-}
-
-.text-effect__word { display: inline-block; white-space: nowrap; }
-.text-effect__char { display: inline-block; }
-@media (prefers-reduced-motion: reduce) {
-  .text-effect__char { opacity: 1 !important; }
 }
 
 /* 4 Boxes Grid */
@@ -1632,7 +1549,6 @@ footer {
 }
 
 @media (max-width: 900px) {
-  .navRight nav { display: none !important; }
   .methodJourney {
     height: auto;
   }
@@ -1658,3 +1574,32 @@ footer {
     transition: none;
   }
 }
+/* Shared rhythm from introduction through contact and footer. */
+section[id] { scroll-margin-top: 86px; }
+body { overflow-x: clip; }
+.reading-progress { position: fixed; inset: 0 0 auto; height: 3px; background: var(--bronze); transform-origin: left; transform: scaleX(0); z-index: 10000; pointer-events: none; }
+.scroll-reveal { opacity: 0; translate: 0 28px; transition: opacity 800ms ease, translate 800ms cubic-bezier(.2,.7,.2,1); transition-delay: var(--reveal-delay, 0ms); }
+.scroll-reveal.is-revealed { opacity: 1; translate: 0 0; }
+:focus-visible { outline: 2px solid var(--bronze); outline-offset: 5px; }
+@media (max-width: 640px) {
+  .serviceModalCard { grid-template-columns: 1fr !important; width: 100% !important; }
+  .serviceModalCard > div { padding: 24px !important; }
+  .method-stage h2 { flex-wrap: wrap !important; font-size: 27px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  .scroll-reveal { opacity: 1; translate: none; }
+}
+@media (max-width: 900px) {
+  .navRight nav { display: none !important; }
+  .nav { padding-inline: 5vw; }
+  .contact h2 { font-size: clamp(32px, 10vw, 75px); line-height: 1; overflow-wrap: anywhere; }
+  .email { font-size: clamp(19px, 6vw, 30px); gap: 12px; }
+}
+
+.services-method-bridge { position: relative; z-index: 2; padding: 70px 7vw 80px; text-align: center; background: #DED1BC; }
+.services-method-bridge > span, .method-intro { font-size: 9px; letter-spacing: .24em; color: #4A3828; }
+.services-method-bridge p { font: 400 clamp(30px, 4.5vw, 64px)/1.05 'Cormorant Garamond', serif; margin: 24px 0; }
+.services-method-bridge a { display: inline-flex; gap: 20px; align-items: center; font-size: 11px; padding: 14px 0; border-bottom: 1px solid #9A723E; }
+.method-intro { position: relative; z-index: 1; margin: 0 0 20px; text-align: center; }

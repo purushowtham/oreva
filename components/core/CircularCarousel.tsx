@@ -10,6 +10,7 @@ export interface CarouselItem {
   alt?: string;
   title?: string;
   subtitle?: string;
+  aspectRatio?: number;
 }
 
 const DEFAULT_ITEMS: CarouselItem[] = [
@@ -144,6 +145,10 @@ const CAPTION_SPACE = 76;
 const TO_RAD = Math.PI / 180;
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+// React rounds CSS lengths in server HTML. Use the same precision on the client
+// so the initial tile geometry hydrates without changing its visual position.
+const cssNumber = (value: number) => Number(value.toFixed(3));
+const cssPx = (value: number) => `${cssNumber(value)}px`;
 const wrap = (degrees: number) => ((((degrees + 180) % 360) + 360) % 360) - 180;
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 4);
 const easeOutQuint = (t: number) => 1 - Math.pow(1 - t, 5);
@@ -297,8 +302,8 @@ const CircularCarousel: React.FC<CircularCarouselProps> = ({
       const turn = ((layout.inward ? -alpha : alpha) * 180) / Math.PI;
       const move =
         axis === 'x'
-          ? `translate3d(0px, ${shift}px, ${depth}px) rotateX(${-turn}deg)`
-          : `translate3d(${shift}px, 0px, ${depth}px) rotateY(${turn}deg)`;
+          ? `translate3d(0px, ${cssPx(shift)}, ${cssPx(depth)}) rotateX(${cssNumber(-turn)}deg)`
+          : `translate3d(${cssPx(shift)}, 0px, ${cssPx(depth)}) rotateY(${cssNumber(turn)}deg)`;
       return { index, total, start, end, size: end - start, move };
     });
   }, [along, axis, curveValue, layout.inward, radius]);
@@ -887,6 +892,10 @@ const CircularCarousel: React.FC<CircularCarouselProps> = ({
   const label = current ? current.title || current.alt || `Image ${active + 1}` : '';
 
   const renderTile = (item: CarouselItem, tile: { index: number; total: number; start: number; end: number; size: number; move: string }, back: boolean) => {
+    // The cylinder bends along its width, so each image can keep its own height.
+    const itemHeight = axis === 'y' && item.aspectRatio && item.aspectRatio > 0
+      ? cardW / item.aspectRatio
+      : cardH;
     const strip = back ? tile.total - 1 - tile.index : tile.index;
     const first = strip === 0;
     const last = strip === tile.total - 1;
@@ -899,12 +908,12 @@ const CircularCarousel: React.FC<CircularCarouselProps> = ({
     const size = tile.size;
     const box: React.CSSProperties =
       axis === 'x'
-        ? { left: `${-cardW / 2}px`, top: `${-size / 2}px`, width: `${cardW}px`, height: `${size}px` }
-        : { left: `${-size / 2}px`, top: `${-cardH / 2}px`, width: `${size}px`, height: `${cardH}px` };
+        ? { left: cssPx(-cardW / 2), top: cssPx(-size / 2), width: cssPx(cardW), height: cssPx(size) }
+        : { left: cssPx(-size / 2), top: cssPx(-itemHeight / 2), width: cssPx(size), height: cssPx(itemHeight) };
     const photoStyle: React.CSSProperties =
       axis === 'x'
-        ? { left: 0, top: `${-offset}px`, width: `${cardW}px`, height: `${cardH}px` }
-        : { left: `${-offset}px`, top: 0, width: `${cardW}px`, height: `${cardH}px` };
+        ? { left: 0, top: cssPx(-offset), width: cssPx(cardW), height: cssPx(cardH) }
+        : { left: cssPx(-offset), top: 0, width: cssPx(cardW), height: cssPx(itemHeight) };
     const flip = axis === 'x' ? ' rotateX(180deg)' : ' rotateY(180deg)';
     return (
       <div
@@ -915,7 +924,7 @@ const CircularCarousel: React.FC<CircularCarouselProps> = ({
       >
         <div
           className="circular-carousel__frame"
-          style={{ height: axis === 'x' ? size : cardH, borderRadius: frameRadius }}
+          style={{ height: cssPx(axis === 'x' ? size : itemHeight), borderRadius: frameRadius }}
         >
           <img
             className="circular-carousel__photo"
@@ -966,7 +975,7 @@ const CircularCarousel: React.FC<CircularCarouselProps> = ({
             className="circular-carousel__plinth"
             style={{
               position: 'absolute',
-              bottom: '-250px',
+              bottom: '-180px',
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 0,

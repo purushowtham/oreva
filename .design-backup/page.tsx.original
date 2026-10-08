@@ -1,7 +1,8 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import ScrollExperience from '../components/core/ScrollExperience';
+import { useDialog } from '../components/core/use-dialog';
 import { TextLoop } from '../components/core/text-loop';
-import { TextEffect } from '../components/core/text-effect';
 import { Cursor } from '../components/core/cursor';
 import { Menu as MenuIcon } from 'lucide-react';
 import { AnimatedBackground } from '../components/core/animated-background';
@@ -9,8 +10,6 @@ import CircularCarousel from '../components/core/CircularCarousel';
 import MethodSection from '../components/core/MethodSection';
 import ProjectShowcaseSection from '../components/core/ProjectShowcaseSection';
 import HeroTransitionSection from '../components/core/HeroTransitionSection';
-import InteractiveFooter from '../components/core/InteractiveFooter';
-import Playground from '../components/core/Playground';
 
 // ─── DATA ──────────────────────────────────────────────────────────────────
 const services = [
@@ -42,15 +41,14 @@ interface ServiceDetailItem {
     details: string[];
     src: string;
     alt?: string;
-    aspectRatio: number;
 }
 
 const whatWeMakeServices: ServiceDetailItem[] = [
     {
         num: '01',
         title: 'VISUAL MERCHANDISING',
-        subtitle: 'SPACES • PRODUCTS • PEOPLE • EXPERIENCES',
-        description: '',
+        subtitle: 'Windows · In-Store Displays · Product Styling',
+        description: 'Window & in-store display concepts, product placement & styling, color, lighting & material curation, and customer journey & visual storytelling.',
         details: [
             'Window & in-store display concepts',
             'Product placement & styling',
@@ -58,14 +56,13 @@ const whatWeMakeServices: ServiceDetailItem[] = [
             'Customer journey & visual storytelling',
         ],
         src: '/circle corousel/visual merchandising/Visual merchandising .PNG',
-        aspectRatio: 1253 / 1098,
         alt: 'Visual Merchandising by ORÉVA'
     },
     {
         num: '02',
         title: 'SPACE CURATION',
-        subtitle: 'SPACES • PRODUCTS • PEOPLE • EXPERIENCES',
-        description: '',
+        subtitle: 'Spatial Planning · Concept Development · Environments',
+        description: 'Spatial planning & zoning, concept development & mood creation, material, furniture & prop selection to create functional, immersive environments.',
         details: [
             'Spatial planning & zoning',
             'Concept development & mood creation',
@@ -73,14 +70,13 @@ const whatWeMakeServices: ServiceDetailItem[] = [
             'Creating functional, immersive environments',
         ],
         src: '/circle corousel/space curration/Space curation .PNG',
-        aspectRatio: 1288 / 1027,
         alt: 'Space Curation by ORÉVA'
     },
     {
         num: '03',
         title: 'EDITORIAL STYLING',
-        subtitle: 'CONCEPTS • MOOD • LOOKS • STYLING • DETAILS • NARRATIVE',
-        description: '',
+        subtitle: 'Fashion Storytelling · Look Development · Art Direction',
+        description: 'Concept-led fashion storytelling, look development & outfit curation, trend, color & silhouette research, and art direction & visual composition.',
         details: [
             'Concept-led fashion storytelling',
             'Look development & outfit curation',
@@ -88,14 +84,13 @@ const whatWeMakeServices: ServiceDetailItem[] = [
             'Art direction & visual composition',
         ],
         src: '/circle corousel/editorial styling/Editorial styling .PNG',
-        aspectRatio: 1253 / 1097,
         alt: 'Editorial Styling by ORÉVA'
     },
     {
         num: '04',
         title: 'BRAND EXPERIENCE',
-        subtitle: 'PEOPLE • SPACE • SENSORY • STORY • EXPERIENCES',
-        description: '',
+        subtitle: 'Identity · Touchpoints · Sensory Storytelling',
+        description: 'Translating brand identity into spaces, creating memorable customer touchpoints, sensory storytelling through visual & material details, and building consistent brand narratives.',
         details: [
             'Translating brand identity into spaces',
             'Creating memorable customer touchpoints',
@@ -103,7 +98,6 @@ const whatWeMakeServices: ServiceDetailItem[] = [
             'Building consistent brand narratives across experiences',
         ],
         src: '/circle corousel/brand experience/Brand experience .PNG',
-        aspectRatio: 1254 / 1098,
         alt: 'Brand Experience by ORÉVA'
     },
 ];
@@ -142,6 +136,7 @@ function FlythroughSection() {
     useEffect(() => {
         if (!canvasRef.current) return;
         let cancelled = false;
+        let dispose: (() => void) | undefined;
 
         import('three').then((THREE) => {
             if (cancelled || !canvasRef.current) return;
@@ -149,7 +144,7 @@ function FlythroughSection() {
             const reducedMotion =
                 typeof window !== 'undefined' &&
                 window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            const spd = reducedMotion ? SPEED_A11Y : SPEED;
+            const spd = reducedMotion ? 0 : SPEED;
 
             // Renderer
             const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -177,6 +172,7 @@ function FlythroughSection() {
 
             IMAGES.forEach((url, idx) => {
                 loader.load(url, (t: any) => {
+                    if (cancelled) { t.dispose(); return; }
                     t.colorSpace = THREE.SRGBColorSpace;
                     const img = t.image as HTMLImageElement;
                     const aspect = img.naturalWidth && img.naturalHeight
@@ -276,8 +272,10 @@ function FlythroughSection() {
             }
             animate();
 
-            return () => {
+            dispose = () => {
                 cancelled = true;
+                cards.forEach(({ mesh }) => { mesh.geometry.dispose(); mesh.material.dispose(); });
+                loaded.forEach(info => info?.tex.dispose());
                 cancelAnimationFrame(raf);
                 window.removeEventListener('resize', onResize);
                 renderer.dispose();
@@ -287,7 +285,7 @@ function FlythroughSection() {
             };
         });
 
-        return () => { cancelled = true; };
+        return () => { cancelled = true; dispose?.(); };
     }, []);
 
     return (
@@ -323,11 +321,20 @@ export default function Home() {
     const [menu, setMenu] = useState(false);
     const [scroll, setScroll] = useState(0);
     const [selectedService, setSelectedService] = useState<ServiceDetailItem | null>(null);
+    const closeService = useCallback(() => setSelectedService(null), []);
+    useDialog(Boolean(selectedService), closeService, '.serviceModalCard');
+    useEffect(() => {
+        const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setMenu(false); };
+        window.addEventListener('keydown', escape);
+        return () => window.removeEventListener('keydown', escape);
+    }, []);
 
     useEffect(() => {
-        const f = () => setScroll(window.scrollY);
+        let frame = 0;
+        const f = () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; setScroll(window.scrollY); }); };
+        f();
         addEventListener('scroll', f, { passive: true });
-        return () => removeEventListener('scroll', f);
+        return () => { removeEventListener('scroll', f); cancelAnimationFrame(frame); };
     }, []);
 
     const heroScrollP = typeof window !== 'undefined' && window.innerHeight > 0
@@ -336,9 +343,10 @@ export default function Home() {
 
     return (
         <main>
+            <ScrollExperience />
             {/* NAV */}
             <header className="nav">
-                <div className="navLeft" style={{ cursor: 'none' }}>
+                <div className="navLeft" >
 
                     <a className="logoNavGroup" href="#top" style={{ display: 'inline-flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
                         <img
@@ -376,16 +384,16 @@ export default function Home() {
                     <a href="mailto:hello@orevastudio.com" className="navIcon" aria-label="Contact ORÉVA Studio">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></svg>
                     </a>
-                    <button className="menuIcon" aria-label={menu ? 'Close navigation' : 'Open navigation'} aria-expanded={menu} onClick={() => setMenu(!menu)}><MenuIcon size={22} strokeWidth={1.5} /></button>
+                    <button aria-label={menu ? "Close navigation" : "Open navigation"} aria-expanded={menu} aria-controls="mobile-navigation" className="menuIcon" onClick={() => setMenu(!menu)}><MenuIcon size={22} strokeWidth={1.5} /></button>
                 </div>
             </header>
 
             {menu && (
-                <div className="mobileMenu">
+                <nav id="mobile-navigation" className="mobileMenu" aria-label="Mobile navigation">
                     {['about', 'services', 'method', 'work', 'contact'].map(x => (
                         <a key={x} href={'#' + x} onClick={() => setMenu(false)}>{x}</a>
                     ))}
-                </div>
+                </nav>
             )}
 
             {/* 1 — HERO */}
@@ -418,7 +426,7 @@ export default function Home() {
                     }}
                 >
                     <img
-                        src="/logo/logo.png"
+                        src="/logo/logo.svg"
                         alt=""
                         className="heroLogo"
                         draggable={false}
@@ -483,27 +491,26 @@ export default function Home() {
 
                 <div className="whatWeMakeContainer">
                     <div className="whatWeMakeHeader">
-                        <h2><TextEffect per="char" preset="fade">What do we make?</TextEffect></h2>
-                        <p><TextEffect per="char" preset="fade">ORÉVA creates tangible and visual outputs across the retail journey.</TextEffect></p>
+                        <h2>What do we make?</h2>
+                        <p>ORÉVA creates tangible and visual outputs across the retail journey.</p>
                     </div>
-                </div>
+            </div>
 
-                {/* 3D circular carousel with plinth base */}
-                <div className="whatWeMakeCarousel">
+                {/* ENLARGED 3D CIRCULAR CAROUSEL WITH PLINTH BASE */}
+                <div style={{ width: '100%', height: '680px', position: 'relative', marginTop: '1vw', marginBottom: '2vw' }}>
                     <CircularCarousel
                         items={whatWeMakeServices.map(s => ({
                             src: s.src,
                             alt: s.alt,
                             title: s.title,
-                            subtitle: s.subtitle,
-                            aspectRatio: s.aspectRatio
+                            subtitle: s.subtitle
                         }))}
                         preset="cylinder"
                         intro="rise"
                         cardWidth={290}
-                        aspectRatio={1253 / 1098}
+                        aspectRatio={0.82}
                         gap={45}
-                        radiusMultiplier={1.15}
+                        radiusMultiplier={1.45}
                         plinthImage="/___6_-removebg-preview.png"
                         speed={12}
                         captions={true}
@@ -514,9 +521,10 @@ export default function Home() {
                         }}
                     />
                 </div>
-                <div className="servicesMethodBridge">
-                    <span>THE WORK BEGINS WITH A POINT OF VIEW</span>
-                    <a href="#method">Explore the ORÉVA method <span aria-hidden="true">↓</span></a>
+                <div className="services-method-bridge">
+                    <span>FROM WHAT WE MAKE TO HOW WE MAKE IT</span>
+                    <p>Every space begins with a story.<br /><i>Here is how we bring it to life.</i></p>
+                    <a href="#method">Discover the ORÉVA method <span aria-hidden="true">↓</span></a>
                 </div>
             </section>
 
@@ -529,12 +537,24 @@ export default function Home() {
             {/* 3d — HERO TO PAGE 2 SCROLL TRANSITION (before footer) */}
             <HeroTransitionSection />
 
-            <Playground />
+            {/* 10 — CONTACT */}
+            <section id="contact" className="contact">
+                <small>08 / CONTACT</small>
+                <h2>LET&apos;S CREATE SOMETHING<br /><i>WORTH EXPERIENCING.</i></h2>
+                <p>Visual Merchandising · Styling · Retail Concepts</p>
+                <a className="email" href="mailto:hello@orevastudio.com">
+                    hello@orevastudio.com <span>↗</span>
+                </a>
+                <div className="finalMark">O</div>
+            </section>
 
-            {/* CONTACT / FOOTER AFTER THE MATERIALS SEQUENCE */}
-            <InteractiveFooter />
+            <footer>
+                <span>ORÉVA STUDIO</span>
+                <span>SPACES. STORIES. DESIRE.</span>
+                <span>© 2026</span>
+            </footer>
 
-            <div className="cursor" style={{ transform: `translate(${scroll * 0.02}px, ${scroll * 0.01}px)` }}></div>
+
 
             {/* SERVICE EXTENDED DETAIL MODAL */}
             {selectedService && (
@@ -554,7 +574,7 @@ export default function Home() {
                     }}
                 >
                     <div
-                        className="serviceModalCard"
+                        className="serviceModalCard" role="dialog" aria-modal="true" aria-label={selectedService.title}
                         onClick={(e) => e.stopPropagation()}
                         style={{
                             background: '#F6F1E7',

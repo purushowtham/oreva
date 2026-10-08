@@ -79,7 +79,7 @@ export default function MethodSection() {
       style={{
         height: '520vh',
         position: 'relative',
-        background: '#F6F1E7',
+        background: '#DED1BC',
       }}
       aria-label="The ORÉVA Method"
     >
@@ -95,7 +95,7 @@ export default function MethodSection() {
           flexDirection: 'column',
           alignItems: 'center',
           paddingTop: 'calc(100px + 2vh)',
-          background: '#F6F1E7',
+          background: '#DED1BC',
           boxSizing: 'border-box',
         }}
       >

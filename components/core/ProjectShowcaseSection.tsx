@@ -241,7 +241,7 @@ export default function ProjectShowcaseSection() {
   return (
     <section
       ref={sectionRef}
-      id="project-showcase"
+      id="work"
       style={{
         height: '430vh', // Reduced from 600vh to 430vh to eliminate end delay
         position: 'relative',
