@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { TextLoop } from '../components/core/text-loop';
+import HomeHero from '../components/core/HomeHero';
+import JourneyLine from '../components/core/JourneyLine';
 import { TextEffect } from '../components/core/text-effect';
 import { Cursor } from '../components/core/cursor';
 import { Menu as MenuIcon } from 'lucide-react';
@@ -330,10 +331,6 @@ export default function Home() {
         return () => removeEventListener('scroll', f);
     }, []);
 
-    const heroScrollP = typeof window !== 'undefined' && window.innerHeight > 0
-        ? Math.min(1, Math.max(0, scroll / (window.innerHeight * 0.85)))
-        : 0;
-
     return (
         <main>
             {/* NAV */}
@@ -389,93 +386,13 @@ export default function Home() {
             )}
 
             {/* 1 — HERO */}
-            <section id="top" className="hero">
-                {/* Background image at low opacity with smooth parallax zoom & blur */}
-                <div
-                    className="heroBg"
-                    aria-hidden="true"
-                    style={{
-                        transform: `scale(${1.04 + heroScrollP * 0.15}) translateY(${heroScrollP * 12}vh)`,
-                        opacity: 0.75,
-                        filter: `blur(${heroScrollP * 8}px)`,
-                        willChange: 'transform, opacity, filter',
-                        transition: 'transform 0.1s ease-out, opacity 0.1s ease-out, filter 0.1s ease-out',
-                    }}
-                />
-
-                <div>
-                    ORÉVA STUDIO <span>—</span> CREATIVE DIRECTION
-                </div>
-
-                {/* Right-side logo mark with hover animation */}
-                <div
-                    className="heroLogoMark"
-                    aria-hidden="true"
-                    style={{
-                        opacity: Math.max(0, 1 - heroScrollP * 1.6),
-                        transform: `translateY(calc(-50% - ${heroScrollP * 40}px)) scale(${1 - heroScrollP * 0.15})`,
-                        willChange: 'transform, opacity',
-                    }}
-                >
-                    <img
-                        src="/logo/logo.png"
-                        alt=""
-                        className="heroLogo"
-                        draggable={false}
-                    />
-                </div>
-
-                <div
-                    className="heroTitle"
-                    style={{
-                        opacity: Math.max(0, 1 - heroScrollP * 1.7),
-                        transform: `translateY(${-heroScrollP * 45}px)`,
-                        willChange: 'transform, opacity',
-                    }}
-                >
-                    <h1 className="heroTextLoop">
-                        <span style={{ color: '#886539' }}>We</span>{' '}
-                        <TextLoop
-                            className="overflow-y-clip"
-                            transition={{
-                                type: 'spring',
-                                stiffness: 900,
-                                damping: 80,
-                                mass: 10,
-                            }}
-                            variants={{
-                                initial: {
-                                    y: 20,
-                                    rotateX: 90,
-                                    opacity: 0,
-                                    filter: 'blur(4px)',
-                                },
-                                animate: {
-                                    y: 0,
-                                    rotateX: 0,
-                                    opacity: 1,
-                                    filter: 'blur(0px)',
-                                },
-                                exit: {
-                                    y: -20,
-                                    rotateX: -90,
-                                    opacity: 0,
-                                    filter: 'blur(4px)',
-                                },
-                            }}
-                        >
-                            <span>Think</span>
-                            <span>Create</span>
-                            <span>Transform</span>
-                        </TextLoop>
-                    </h1>
-                    <p>Visual Merchandising · Styling · Retail Concepts</p>
-                </div>
-            </section>
+            <HomeHero />
 
             {/* 2 — THREE.JS FLYTHROUGH (full-screen, after first scroll) */}
             <FlythroughSection />
 
+            <div className="studioJourney">
+            <JourneyLine />
             {/* 3 — WHAT DO WE MAKE & 3D CIRCULAR CAROUSEL */}
             <section id="services" className="whatWeMakeSection">
                 {/* Subtle luxury transition mask from flythrough */}
@@ -533,6 +450,7 @@ export default function Home() {
 
             {/* CONTACT / FOOTER AFTER THE MATERIALS SEQUENCE */}
             <InteractiveFooter />
+            </div>
 
             <div className="cursor" style={{ transform: `translate(${scroll * 0.02}px, ${scroll * 0.01}px)` }}></div>
 

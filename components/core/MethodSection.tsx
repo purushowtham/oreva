@@ -1,5 +1,7 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import { gsap, useGSAP } from '@/lib/gsap';
+import './MethodSection.css';
 
 const STEPS = [
   {
@@ -44,7 +46,7 @@ const N = STEPS.length;
 export default function MethodSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [p, setP] = useState(0); // 0 to N-1 continuous
-  const [badgeRot, setBadgeRot] = useState(0);
+  const [reduced, setReduced] = useState(false);
 
   const currentWordIdx = Math.min(Math.round(p), N - 1);
 
@@ -55,29 +57,32 @@ export default function MethodSection() {
   for (let i = 1; i < N; i++) if (p - (i - 1) >= WASH_REACHES_HEADING) bgIdx = i;
   const { textColor, accentColor } = STEPS[bgIdx];
 
-  useEffect(() => {
-    const onScroll = () => {
-      const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const totalTrack = el.offsetHeight - window.innerHeight;
-      if (totalTrack <= 0) return;
-      const scrolled = -rect.top;
-      const raw = Math.max(0, Math.min(1, scrolled / totalTrack));
-      setP(raw * (N - 1));
-      setBadgeRot(window.scrollY * 0.25);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  useGSAP(() => {
+    const media = gsap.matchMedia();
+    media.add('(prefers-reduced-motion: no-preference)', () => {
+      setReduced(false);
+      const progress = { value: 0 };
+      gsap.to(progress, { value: N - 1, ease: 'none', onUpdate: () => setP(progress.value), scrollTrigger: {
+        trigger: sectionRef.current, start: 'top top', end: 'bottom bottom', scrub: .65, invalidateOnRefresh: true,
+      } });
+    });
+    media.add('(prefers-reduced-motion: reduce)', () => { setReduced(true); setP(0); });
+    return () => media.revert();
+  }, { scope: sectionRef });
+
+  const goToStep = (index: number) => {
+    const section = sectionRef.current;
+    if (!section) return;
+    window.scrollTo({ top: section.getBoundingClientRect().top + window.scrollY + (section.offsetHeight - window.innerHeight) * index / (N - 1), behavior: reduced ? 'instant' : 'smooth' });
+  };
 
   return (
     <section
       ref={sectionRef}
       id="method"
+      className={reduced ? "orevaMethod methodReduced" : "orevaMethod"}
       style={{
-        height: '520vh',
+        height: '420vh',
         position: 'relative',
         background: '#DED1BC',
       }}
@@ -87,6 +92,7 @@ export default function MethodSection() {
       <div
         className="method-stage"
         style={{
+          color: textColor,
           position: 'sticky',
           top: 0,
           height: '100vh',
@@ -120,6 +126,7 @@ export default function MethodSection() {
           );
         })}
 
+        <p className="methodEyebrow">THE ORÉVA METHOD — FROM INSTINCT TO IMPACT</p>
         {/* ── 1. Heading (Clear layout with wide uncropped word box) ── */}
         <div
           style={{
@@ -129,6 +136,7 @@ export default function MethodSection() {
           }}
         >
           <h2
+            aria-label="The ORÉVA Method"
             style={{
               fontFamily: "'Cormorant Garamond', 'DM Serif Display', Georgia, serif",
               fontWeight: 600,
@@ -192,17 +200,18 @@ export default function MethodSection() {
 
         {/* ── 2. Card Stack (Brought down further with extra margin top) ── */}
         <div
+          className="methodCardStack"
           style={{
             position: 'relative',
-            width: 'min(640px, 84vw)',
+            width: 'min(640px, 80vw)',
             height: 'min(48vh, 370px)',
-            marginTop: '6vh',
+            marginTop: '7vh',
             flex: 'none',
           }}
         >
           {STEPS.map((step, i) => {
             const d = i - p; // d > 0 (behind), d = 0 (front), d < 0 (sliding down out)
-            if (d > 3) return null;
+            if (d > 3 && !reduced) return null;
 
             let ty = '0%';
             let scale = 1;
@@ -212,7 +221,7 @@ export default function MethodSection() {
             if (d > 0) {
               // Cards peeking ABOVE the front card
               const offset = Math.min(d, 3);
-              ty = `${-26 * offset}px`;
+              ty = `${-8 * offset}px`;
               scale = 1 - 0.035 * offset;
             } else {
               // Front or exiting card
@@ -225,6 +234,7 @@ export default function MethodSection() {
             return (
               <div
                 key={step.word}
+                className="methodCard"
                 style={{
                   position: 'absolute',
                   inset: 0,
@@ -232,7 +242,7 @@ export default function MethodSection() {
                   border: `6px solid ${step.borderColor}`,
                   borderRadius: '6px',
                   overflow: 'hidden',
-                  transform: `translateY(${ty}) scale(${scale})`,
+                  transform: `translateY(${ty}) rotate(${d > 0 ? Math.min(d, 3) * -0.65 : Math.abs(d) * 5}deg) scale(${scale})`,
                   transformOrigin: '50% 100%',
                   opacity,
                   zIndex,
@@ -288,56 +298,10 @@ export default function MethodSection() {
           })}
         </div>
 
-        {/* ── 3. Button (~24px below stack) ── */}
-        <div
-          style={{
-            marginTop: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            borderRadius: '4px',
-            overflow: 'hidden',
-            boxShadow: '0 6px 24px rgba(154,114,62,0.22)',
-            zIndex: 2,
-          }}
-        >
-          {/* Arrow chip */}
-          <div
-            style={{
-              background: '#4A3828',
-              padding: '12px 18px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span
-              style={{
-                fontSize: '15px',
-                color: '#F6F1E7',
-                lineHeight: 1,
-              }}
-            >
-              →
-            </span>
-          </div>
-          {/* Main button label */}
-          <button
-            style={{
-              background: '#9A723E',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '12px 26px',
-              fontFamily: 'Montserrat, DM Sans, sans-serif',
-              fontWeight: 400,
-              fontSize: '10px',
-              letterSpacing: '0.27em',
-              textTransform: 'uppercase',
-              color: '#F6F1E7',
-            }}
-          >
-            EXPLORE THE METHOD
-          </button>
-        </div>
+        <nav className="methodStepNav" aria-label="Method steps">
+          {STEPS.map((step, index) => <button key={step.word} onClick={() => goToStep(index)} aria-current={currentWordIdx === index ? 'step' : undefined}><span>0{index + 1}</span><span>{step.word}</span></button>)}
+        </nav>
+        <a className="methodWorkLink" href="#work">See the method in practice <span aria-hidden="true">↗</span></a>
       </div>
 
       {/* Mobile styling overrides */}
