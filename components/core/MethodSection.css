@@ -1,29 +1,119 @@
-.methodEyebrow { position: relative; z-index: 2; font-size: 9px; letter-spacing: .22em; margin: 0 0 20px; opacity: .75; text-align: center; }
-.methodCardStack { clip-path: inset(-55px -50px 0 -50px); }
-.methodStepNav { position: relative; z-index: 2; display: flex; width: min(680px, 84vw); margin-top: 28px; gap: 10px; }
-.methodStepNav button { flex: 1; color: inherit; background: none; border: 0; border-top: 1px solid currentColor; padding: 11px 0; opacity: .45; cursor: pointer; text-align: left; transition: opacity .3s, transform .3s; }
-.methodStepNav button span:first-child { display: block; font: 24px 'Cormorant Garamond', Georgia, serif; margin-bottom: 4px; }
-.methodStepNav button span:last-child { font-size: 8px; letter-spacing: .1em; }
-.methodStepNav button[aria-current], .methodStepNav button:hover, .methodStepNav button:focus-visible { opacity: 1; transform: translateY(-3px); }
-.methodWorkLink { position: relative; z-index: 2; font-size: 10px; margin-top: 8px; border-bottom: 1px solid currentColor; padding-bottom: 8px; }
-.methodWorkLink span { margin-left: 18px; }
-.methodReduced { height: auto !important; }
-.methodReduced .method-stage { position: relative !important; height: auto !important; padding-bottom: 50px; }
-.methodReduced .methodCardStack { height: auto !important; display: grid; gap: 18px; margin-top: 30px !important; }
-.methodReduced .methodCard { position: relative !important; transform: none !important; opacity: 1 !important; aspect-ratio: 16 / 10; }
-.methodReduced .methodStepNav { display: none; }
-.methodReduced .methodWorkLink { margin-top: 24px; }
-@media (max-width: 640px) {
-  .methodEyebrow { font-size: 7px; margin-bottom: 12px; letter-spacing: .12em; }
-  .methodStepNav { gap: 7px; }
-  .methodStepNav button span:last-child { font-size: 6px; letter-spacing: 0; }
-  .orevaMethod .methodCardStack { height: min(40vh, 300px) !important; }
-  .methodReduced .methodCardStack { height: auto !important; }
+.methodEditorial {
+  position: relative;
+  overflow: hidden;
+  --method-ink: #342a20;
+  --method-muted: #493c2f;
+  --method-accent: #725330;
+  background: #ded1bc;
+  color: var(--method-ink);
+  padding: 170px clamp(26px, 4.3vw, 72px) 132px;
+  scroll-margin-top: 90px;
 }
-@media (max-height: 720px) and (min-width: 641px) {
-  .orevaMethod .method-stage { padding-top: 105px !important; }
-  .orevaMethod .methodCardStack { height: 34vh !important; margin-top: 5vh !important; }
-  .methodEyebrow { margin-bottom: 10px; }
-  .methodStepNav { margin-top: 16px; }
-  .methodReduced .methodCardStack { height: auto !important; }
+
+.methodEditorial::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 100px;
+  background: linear-gradient(transparent, #f6f1e7);
+  pointer-events: none;
+}
+
+.methodEditorial__intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  max-width: 1500px;
+  margin: 0 auto clamp(80px, 12vw, 190px);
+}
+
+.methodEditorial__heading {
+  margin: 0;
+  font: 400 clamp(68px, 9.4vw, 150px)/.9 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -.06em;
+  white-space: nowrap;
+}
+
+.methodEditorial__heading em { color: var(--method-accent); font-weight: 400; }
+.methodEditorial__count { margin-top: clamp(16px, 3vw, 46px); color: var(--method-muted); font: 400 18px Montserrat, sans-serif; letter-spacing: .08em; }
+
+.methodEditorial__list { max-width: 1500px; margin: 0 auto; }
+.methodEditorial__row {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: clamp(36px, 7vw, 124px);
+  min-height: min(82svh, 800px);
+  margin-bottom: clamp(82px, 11vw, 170px);
+}
+
+.methodEditorial__row--reverse { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); }
+.methodEditorial__row--reverse .methodEditorial__media { grid-column: 1; grid-row: 1; }
+.methodEditorial__row--reverse .methodEditorial__copy { grid-column: 2; grid-row: 1; }
+
+.methodEditorial__copy { align-self: center; will-change: transform, opacity; }
+.methodEditorial__number { display: block; color: var(--method-muted); font: 400 12px Montserrat, sans-serif; letter-spacing: .18em; }
+.methodEditorial__copy h3 {
+  margin: 26px 0 22px;
+  font: 400 clamp(72px, 8vw, 132px)/.86 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -.055em;
+}
+.methodEditorial__copy p { max-width: 26ch; margin: 0; color: var(--method-muted); font: 400 clamp(16px, 1.45vw, 21px)/1.5 Montserrat, sans-serif; }
+
+.methodEditorial__media {
+  position: relative;
+  aspect-ratio: 1.35;
+  overflow: hidden;
+  background: #746350;
+  clip-path: inset(0);
+  will-change: transform, opacity, clip-path;
+}
+.methodEditorial__media img { display: block; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+
+.methodEditorial__next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 24px 0;
+  color: var(--method-ink);
+  border-top: 1px solid currentColor;
+  font: 400 clamp(32px, 4vw, 64px)/1 'Cormorant Garamond', Georgia, serif;
+  transition: color .25s ease;
+}
+.methodEditorial__next:hover { color: #b99165; }
+.methodEditorial__next:focus-visible { outline: 2px solid #b99165; outline-offset: 8px; }
+.methodEditorial__next span { font: 300 clamp(22px, 3vw, 40px) Montserrat, sans-serif; }
+
+@media (max-width: 800px) {
+  .methodEditorial { padding: 130px 7vw 88px; }
+  .methodEditorial::before { height: 120px; }
+  .methodEditorial__intro { margin-bottom: 74px; }
+  .methodEditorial__heading { font-size: clamp(64px, 11vw, 100px); white-space: normal; }
+  .methodEditorial__row,
+  .methodEditorial__row--reverse { display: flex; flex-direction: column; align-items: stretch; min-height: 0; gap: 34px; margin-bottom: 110px; }
+  .methodEditorial__row--reverse .methodEditorial__copy { order: 0; }
+  .methodEditorial__row--reverse .methodEditorial__media { order: 1; }
+  .methodEditorial__copy { align-self: stretch; }
+  .methodEditorial__copy h3 { margin: 15px 0 14px; font-size: clamp(66px, 12vw, 100px); }
+  .methodEditorial__media { width: 100%; aspect-ratio: 1.2; }
+}
+
+@media (max-width: 480px) {
+  .methodEditorial { padding: 116px 6vw 76px; }
+  .methodEditorial__intro { gap: 8px; margin-bottom: 62px; }
+  .methodEditorial__heading { font-size: clamp(54px, 13vw, 72px); }
+  .methodEditorial__count { margin-top: 14px; font-size: 12px; }
+  .methodEditorial__row,
+  .methodEditorial__row--reverse { margin-bottom: 82px; gap: 25px; }
+  .methodEditorial__copy h3 { font-size: clamp(62px, 17vw, 82px); }
+  .methodEditorial__copy p { font-size: 15px; }
+  .methodEditorial__media { aspect-ratio: 1.05; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .methodEditorial__copy,
+  .methodEditorial__media,
+  .methodEditorial__media img { will-change: auto; }
 }

@@ -22,12 +22,6 @@ export default function ScrollExperience() {
     let frame = 0;
     const update = () => {
       frame = 0;
-      const method = document.getElementById('method');
-      if (method) {
-        // Begin the handoff while both sections share the viewport.
-        const entry = Math.max(0, Math.min(1, 1 - method.getBoundingClientRect().top / (window.innerHeight * .85)));
-        method.style.setProperty('--method-entry', reduced.matches ? '1' : String(entry));
-      }
       const distance = document.documentElement.scrollHeight - window.innerHeight;
       if (progress.current) progress.current.style.transform = `scaleX(${distance > 0 ? Math.min(1, window.scrollY / distance) : 0})`;
     };

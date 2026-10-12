@@ -1161,35 +1161,24 @@ footer {
 
 /* ── What Do We Make Section & Blur-Scale Hover Cards ─────────────────────── */
 .whatWeMakeSection {
-  background: #DED1BC;
+  --scene-background: #EFECE5;
+  background: var(--scene-background);
   position: relative;
   width: 100%;
   /* Smooth luxury transition from the preceding flythrough section */
-  border-top: 1px solid rgba(154, 114, 62, 0.2);
+  border-top: 0;
 }
 
 .servicesMethodBridge {
-  min-height: 120px;
-  padding: 24px 24px 38px;
-  background: #DED1BC;
+  min-height: 94px;
+  padding: 20px 24px 30px;
+  background: transparent;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
-}
-
-.servicesMethodBridge > span {
-  color: var(--bronze);
-  font-size: 10px;
-  letter-spacing: .28em;
-}
-
-.servicesMethodBridge p {
-  margin: 18px 0 24px;
-  font: 400 clamp(32px, 4vw, 60px)/1.05 'Cormorant Garamond', Georgia, serif;
-  color: var(--brown);
 }
 
 .servicesMethodBridge a {
@@ -1201,40 +1190,7 @@ footer {
   font-size: 10px;
   letter-spacing: .18em;
   text-transform: uppercase;
-  margin-top: 12px;
-}
-
-.servicesMethodBridge::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  height: 26px;
-  border-left: 1px solid var(--bronze);
-}
-
-.method-stage::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  height: 62px;
-  z-index: 1;
-  border-left: 1px solid var(--bronze);
-  pointer-events: none;
-}
-
-@media (max-width: 640px) {
-  .method-stage h2 {
-    flex-wrap: wrap !important;
-    font-size: clamp(25px, 7vw, 32px) !important;
-    gap: .1em !important;
-  }
-
-  .method-stage h2 > span:nth-child(2) {
-    width: 100% !important;
-    text-align: center !important;
-  }
+  margin-top: 0;
 }
 
 .whatWeMakeTransitionMask {
@@ -1243,7 +1199,7 @@ footer {
   left: 0;
   right: 0;
   height: 60px;
-  background: linear-gradient(to bottom, rgba(239, 236, 229, 0.6) 0%, transparent 100%);
+  background: transparent;
   pointer-events: none;
 }
 

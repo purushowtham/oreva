@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import HomeHero from '../components/core/HomeHero';
-import JourneyLine from '../components/core/JourneyLine';
 import { TextEffect } from '../components/core/text-effect';
 import { Cursor } from '../components/core/cursor';
 import { Menu as MenuIcon } from 'lucide-react';
@@ -10,8 +9,7 @@ import CircularCarousel from '../components/core/CircularCarousel';
 import MethodSection from '../components/core/MethodSection';
 import ProjectShowcaseSection from '../components/core/ProjectShowcaseSection';
 import HeroTransitionSection from '../components/core/HeroTransitionSection';
-import InteractiveFooter from '../components/core/InteractiveFooter';
-import Playground from '../components/core/Playground';
+import ScrollContinuity from '../components/core/ScrollContinuity';
 
 // ─── DATA ──────────────────────────────────────────────────────────────────
 const services = [
@@ -293,7 +291,7 @@ function FlythroughSection() {
 
     return (
         <section id="about" className="flySection">
-            {/* Soft gradient blend transition from hero photo */}
+            {/* Continue the landing scene's warm gray without a color seam. */}
             <div
                 className="flySectionTopBlend"
                 style={{
@@ -302,7 +300,7 @@ function FlythroughSection() {
                     left: 0,
                     right: 0,
                     height: '28vh',
-                    background: 'linear-gradient(to bottom, #F6F1E7 0%, rgba(246, 241, 231, 0.7) 45%, rgba(239, 236, 229, 0) 100%)',
+                    background: 'linear-gradient(to bottom, #EFECE5 0%, rgba(239, 236, 229, 0.7) 45%, rgba(239, 236, 229, 0) 100%)',
                     zIndex: 8,
                     pointerEvents: 'none',
                 }}
@@ -323,18 +321,26 @@ function FlythroughSection() {
 export default function Home() {
     const [menu, setMenu] = useState(false);
     const [scroll, setScroll] = useState(0);
+    const [darkNav, setDarkNav] = useState(true);
     const [selectedService, setSelectedService] = useState<ServiceDetailItem | null>(null);
 
     useEffect(() => {
-        const f = () => setScroll(window.scrollY);
+        const f = () => {
+            setScroll(window.scrollY);
+            const hero = document.getElementById('top');
+            setDarkNav(!!hero && hero.getBoundingClientRect().bottom > window.innerHeight * .55);
+        };
+        f();
         addEventListener('scroll', f, { passive: true });
-        return () => removeEventListener('scroll', f);
+        addEventListener('resize', f);
+        return () => { removeEventListener('scroll', f); removeEventListener('resize', f); };
     }, []);
 
     return (
         <main>
+            <ScrollContinuity />
             {/* NAV */}
-            <header className="nav">
+            <header className={`nav${darkNav ? ' nav--dark' : ''}`}>
                 <div className="navLeft" style={{ cursor: 'none' }}>
 
                     <a className="logoNavGroup" href="#top" style={{ display: 'inline-flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
@@ -391,8 +397,6 @@ export default function Home() {
             {/* 2 — THREE.JS FLYTHROUGH (full-screen, after first scroll) */}
             <FlythroughSection />
 
-            <div className="studioJourney">
-            <JourneyLine />
             {/* 3 — WHAT DO WE MAKE & 3D CIRCULAR CAROUSEL */}
             <section id="services" className="whatWeMakeSection">
                 {/* Subtle luxury transition mask from flythrough */}
@@ -424,7 +428,7 @@ export default function Home() {
                         plinthImage="/___6_-removebg-preview.png"
                         speed={12}
                         captions={true}
-                        fadeColor="#DED1BC"
+                        fadeColor="var(--scene-background)"
                         onItemClick={(item, index) => {
                             const fullService = whatWeMakeServices[index] || whatWeMakeServices[0];
                             setSelectedService(fullService);
@@ -432,7 +436,6 @@ export default function Home() {
                     />
                 </div>
                 <div className="servicesMethodBridge">
-                    <span>THE WORK BEGINS WITH A POINT OF VIEW</span>
                     <a href="#method">Explore the ORÉVA method <span aria-hidden="true">↓</span></a>
                 </div>
             </section>
@@ -443,14 +446,8 @@ export default function Home() {
             {/* 3c — PROJECT SHOWCASE (after method section) */}
             <ProjectShowcaseSection />
 
-            {/* 3d — HERO TO PAGE 2 SCROLL TRANSITION (before footer) */}
+            {/* 3d — WE TRANSFORM REVEALS CONTACT */}
             <HeroTransitionSection />
-
-            <Playground />
-
-            {/* CONTACT / FOOTER AFTER THE MATERIALS SEQUENCE */}
-            <InteractiveFooter />
-            </div>
 
             <div className="cursor" style={{ transform: `translate(${scroll * 0.02}px, ${scroll * 0.01}px)` }}></div>
 
