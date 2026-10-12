@@ -179,6 +179,12 @@ export default function ProjectShowcaseSection() {
       const scrolled = -rect.top;
       const raw = Math.max(0, Math.min(1, scrolled / totalTrack));
       targetProgress.current = raw;
+      // Reset immediately when leaving the scene; easing must not leave a
+      // previously visible card hanging over the section entrance.
+      if (raw === 0) {
+        currentProgress.current = 0;
+        setP(0);
+      }
     };
 
     const updateLoop = () => {
@@ -189,11 +195,13 @@ export default function ProjectShowcaseSection() {
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
     onScroll();
     animFrameId.current = requestAnimationFrame(updateLoop);
 
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
       if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
     };
   }, []);
@@ -314,10 +322,12 @@ export default function ProjectShowcaseSection() {
           }}
         >
           {PROJECTS.map((proj, i) => {
-            // Calibrated startP & spanP so last card clears screen at p = 0.93 without wasted end delay
-            const startP = i * 0.075;
-            const spanP = 0.48;
+            // Reveal the background title first, then bring in each photo.
+            // The final card still clears before the end of the scroll track.
+            const startP = 0.08 + i * 0.075;
+            const spanP = 0.44;
             const rawP = Math.max(0, Math.min(1, (p - startP) / spanP));
+            const isActive = rawP > 0 && rawP < 1;
 
             const eased =
               rawP < 0.5
@@ -338,7 +348,8 @@ export default function ProjectShowcaseSection() {
                 key={proj.id}
                 onClick={() => openProjectModal(proj)}
                 role="button"
-                tabIndex={0}
+                tabIndex={isActive ? 0 : -1}
+                aria-hidden={!isActive}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     openProjectModal(proj);
@@ -347,6 +358,8 @@ export default function ProjectShowcaseSection() {
                 className="showcase-card-clickable"
                 style={{
                   position: 'absolute',
+                  visibility: isActive ? 'visible' : 'hidden',
+                  pointerEvents: isActive ? 'auto' : 'none',
                   top: '50%',
                   left: 0,
                   width: 'clamp(220px, 26vw, 380px)',

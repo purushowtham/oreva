@@ -1,6 +1,7 @@
 .methodEditorial {
   position: relative;
-  overflow: hidden;
+  overflow: clip;
+  isolation: isolate;
   --method-ink: #342a20;
   --method-muted: #493c2f;
   --method-accent: #725330;
@@ -18,6 +19,26 @@
   background: linear-gradient(transparent, #f6f1e7);
   pointer-events: none;
 }
+
+.methodEditorial__atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: clip;
+  mask-image: linear-gradient(transparent, #000 12%, #000 86%, transparent);
+}
+.methodEditorial__lightStage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.methodEditorial__light {
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(ellipse at 68% 38%, #ffffff 0%, #ffffff90 18%, transparent 57%);
+  opacity: .045;
+  transform-origin: center;
+  will-change: transform;
+}
+.methodEditorial__titleMask { overflow: hidden; padding: 6px 0 10px; }
+.methodEditorial__titleMask h3 { margin: 20px 0 12px; transform-origin: left bottom; will-change: transform; }
 
 .methodEditorial__intro {
   display: flex;
@@ -113,6 +134,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .methodEditorial__atmosphere { display: none; }
+  .methodEditorial__titleMask h3 { will-change: auto; }
   .methodEditorial__copy,
   .methodEditorial__media,
   .methodEditorial__media img { will-change: auto; }
